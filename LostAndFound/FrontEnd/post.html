@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>أضف بلاغ – لقيت</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-laqeet">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><i class="fas fa-search-location me-2"></i>ل<span>قيت</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i> الرئيسية</a></li>
+        <li class="nav-item"><a class="nav-link" href="browse.html"><i class="fas fa-list me-1"></i> تصفح</a></li>
+        <li class="nav-item"><a class="nav-link" href="messages.html"><i class="fas fa-comments me-1"></i> الرسائل</a></li>
+        <li class="nav-item"><a class="nav-link" href="claims.html"><i class="fas fa-hand-holding me-1"></i> مطالباتي</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-2">
+        <a href="profile.html" class="btn btn-outline-light btn-sm"><i class="fas fa-user me-1"></i> حسابي</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="post-header">
+  <div class="container text-center">
+    <h1 class="fw-bold mb-1"><i class="fas fa-plus-circle me-2"></i>أضف بلاغ جديد</h1>
+    <p style="color:rgba(255,255,255,0.85)">أبلّغ عن غرض ضاع أو لقيته – ساعد تردّه لصاحبه</p>
+  </div>
+</div>
+
+<section class="py-4">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <!-- Type Selector -->
+        <div class="post-card mb-4 text-center">
+          <h5 class="fw-bold mb-3">نوع البلاغ</h5>
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="type-option p-3 rounded-3 border-2 border" id="typeLost" onclick="selectType('lost')" style="cursor:pointer;transition:all 0.2s">
+                <i class="fas fa-exclamation-circle fa-2x text-danger mb-2"></i>
+                <h6 class="fw-bold mb-1">غرض ضاع مني</h6>
+                <small class="text-muted">بلاغ عن مفقود</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="type-option p-3 rounded-3 border-2 border" id="typeFound" onclick="selectType('found')" style="cursor:pointer;transition:all 0.2s">
+                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                <h6 class="fw-bold mb-1">لقيت غرض</h6>
+                <small class="text-muted">بلاغ عن موجود</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-card">
+          <form id="postForm" novalidate>
+            <input type="hidden" id="reportType" name="Status" />
+            <!-- Basic Info -->
+            <h6 class="fw-bold mb-3 pb-2" style="border-bottom:2px solid var(--primary-light)"><i class="fas fa-info-circle me-2 text-primary"></i>بيانات الغرض</h6>
+
+            <div class="row g-3 mb-3">
+              <div class="col-12">
+                <label class="form-label" for="itemTitle">اسم الغرض <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="itemTitle" name="Title" placeholder="مثال: محفظة جلدية بنية، هاتف iPhone أزرق..." required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="itemCategory">الفئة <span class="text-danger">*</span></label>
+                <select class="form-select" id="itemCategory" name="Category" required>
+                  <option value="">اختر الفئة</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="itemDate">تاريخ الفقدان/الإيجاد <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="itemDate" name="EventDate" required />
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="itemDesc">الوصف التفصيلي <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="itemDesc" name="Description" rows="4" placeholder="وصّف الغرض بالتفصيل – الشكل، اللون، المميزات..." required></textarea>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <h6 class="fw-bold mb-3 pb-2" style="border-bottom:2px solid var(--primary-light)"><i class="fas fa-map-marker-alt me-2 text-primary"></i>الموقع</h6>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label" for="itemCity">المدينة <span class="text-danger">*</span></label>
+                <select class="form-select" id="itemCity" name="City" required>
+                  <option value="">اختر المدينة</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="itemLocation">الموقع التفصيلي</label>
+                <input type="text" class="form-control" id="itemLocation" name="Location" placeholder="مثال: محطة مترو، مول، شارع..." />
+              </div>
+            </div>
+
+            <!-- Image Upload -->
+            <h6 class="fw-bold mb-3 pb-2" style="border-bottom:2px solid var(--primary-light)"><i class="fas fa-camera me-2 text-primary"></i>صورة الغرض</h6>
+            <div class="mb-3">
+              <div class="upload-area" onclick="document.getElementById('imgInput').click()">
+                <i class="fas fa-cloud-upload-alt d-block mb-2"></i>
+                <p class="mb-1 fw-bold">اضغط لرفع صورة</p>
+                <p class="small text-muted">PNG, JPG حتى 5MB</p>
+              </div>
+              <input type="file" id="imgInput" name="ImageFile" accept="image/png,image/jpeg" style="display:none" onchange="previewImg(this)" />
+              <div class="mt-2" id="imgPreviewWrap" style="display:none">
+                <img id="imagePreview" src="" alt="معاينة" class="img-fluid" />
+                <button type="button" class="btn btn-sm btn-outline-danger mt-1" onclick="clearImg()"><i class="fas fa-trash me-1"></i>حذف الصورة</button>
+              </div>
+            </div>
+
+            <!-- Contact -->
+            <h6 class="fw-bold mb-3 pb-2" style="border-bottom:2px solid var(--primary-light)"><i class="fas fa-phone me-2 text-primary"></i>بيانات التواصل</h6>
+            <div class="mb-3">
+              <label class="form-label" for="itemContact">رقم التليفون <span class="text-danger">*</span></label>
+              <input type="tel" class="form-control" id="itemContact" name="ContactPhone" placeholder="01xxxxxxxxx" required />
+            </div>
+
+            <!-- Verification (only for found) -->
+            <div id="verificationSection" style="display:none">
+              <h6 class="fw-bold mb-3 pb-2" style="border-bottom:2px solid var(--primary-light)"><i class="fas fa-shield-alt me-2 text-primary"></i>أسئلة التحقق <span class="badge bg-info text-dark ms-1 small">للموجودات فقط</span></h6>
+              <div class="verification-section mb-3">
+                <p class="small text-muted mb-3"><i class="fas fa-info-circle me-1"></i>ضيف أسئلة تتحقق بيها من هوية صاحب الغرض. اكتب الإجابة الصح بس انت عارفها.</p>
+                <div id="questionsContainer">
+                  <div class="question-item mb-3 row g-2">
+                    <div class="col-md-7">
+                      <label class="form-label small">السؤال</label>
+                      <input type="text" class="form-control" name="VerificationQuestions" placeholder="مثال: كم عدد البطاقات؟" />
+                    </div>
+                    <div class="col-md-5">
+                      <label class="form-label small">الإجابة الصحيحة</label>
+                      <input type="text" class="form-control" name="VerificationAnswers" placeholder="الإجابة" />
+                    </div>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addQuestion()"><i class="fas fa-plus me-1"></i>أضف سؤال آخر</button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100"><i class="fas fa-paper-plane me-2"></i>نشر البلاغ</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-body py-4">
+        <div style="font-size:4rem" class="mb-3">🎉</div>
+        <h4 class="fw-bold text-success">تم نشر البلاغ!</h4>
+        <p class="text-muted">تم إضافة بلاغك بنجاح. هيظهر في قائمة البلاغات فوراً.</p>
+        <div class="d-flex gap-2 justify-content-center mt-3">
+          <a href="browse.html" class="btn btn-primary">تصفح البلاغات</a>
+          <a href="index.html" class="btn btn-outline-secondary">الرئيسية</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer mt-4">
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="footer-brand"><i class="fas fa-search-location me-2"></i>ل<span>قيت</span></div>
+        <p class="mt-2">منصة لقيت هي الحل الأول في مصر لاسترداد المفقودات.</p>
+      </div>
+      <div class="col-lg-3 col-6"><h5>روابط</h5><a href="index.html">الرئيسية</a><a href="browse.html">التصفح</a></div>
+      <div class="col-lg-3 col-6"><h5>تواصل</h5><p><i class="fas fa-phone me-2 text-warning"></i>16000</p></div>
+    </div>
+    <hr class="footer-divider" />
+    <p class="footer-bottom text-center">© 2025 لقيت. جميع الحقوق محفوظة.</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="data.js"></script>
+<script>
+let selectedType = '';
+
+function selectType(type) {
+  selectedType = type;
+  document.getElementById('reportType').value = type;
+  document.getElementById('typeLost').style.background = type === 'lost' ? '#fee2e2' : '#fff';
+  document.getElementById('typeLost').style.borderColor = type === 'lost' ? '#ef4444' : '#dee2e6';
+  document.getElementById('typeFound').style.background = type === 'found' ? '#dcfce7' : '#fff';
+  document.getElementById('typeFound').style.borderColor = type === 'found' ? '#10b981' : '#dee2e6';
+  document.getElementById('verificationSection').style.display = type === 'found' ? '' : 'none';
+}
+
+function initSelects() {
+  const catEl = document.getElementById('itemCategory');
+  const cityEl = document.getElementById('itemCity');
+  CATEGORIES.filter(c => c !== 'الكل').forEach(c => catEl.innerHTML += `<option value="${c}">${c}</option>`);
+  CITIES.filter(c => c !== 'الكل').forEach(c => cityEl.innerHTML += `<option value="${c}">${c}</option>`);
+  document.getElementById('itemDate').max = new Date().toISOString().split('T')[0];
+}
+
+function previewImg(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const allowedTypes = ['image/png', 'image/jpeg'];
+    const maxSize = 5 * 1024 * 1024;
+    if (!allowedTypes.includes(file.type)) {
+      alert('الصورة لازم تكون PNG أو JPG');
+      clearImg();
+      return;
+    }
+    if (file.size > maxSize) {
+      alert('حجم الصورة لازم يكون أقل من 5MB');
+      clearImg();
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('imagePreview').src = e.target.result;
+      document.getElementById('imgPreviewWrap').style.display = '';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function clearImg() {
+  document.getElementById('imgInput').value = '';
+  document.getElementById('imgPreviewWrap').style.display = 'none';
+}
+
+function addQuestion() {
+  const c = document.getElementById('questionsContainer');
+  const div = document.createElement('div');
+  div.className = 'question-item mb-3 row g-2';
+  div.innerHTML = `
+    <div class="col-md-7"><label class="form-label small">السؤال</label><input type="text" class="form-control" name="VerificationQuestions" placeholder="السؤال..." /></div>
+    <div class="col-md-4"><label class="form-label small">الإجابة</label><input type="text" class="form-control" name="VerificationAnswers" placeholder="الإجابة" /></div>
+    <div class="col-md-1 d-flex align-items-end"><button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.question-item').remove()"><i class="fas fa-trash"></i></button></div>
+  `;
+  c.appendChild(div);
+}
+
+document.getElementById('postForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (!selectedType) { alert('اختار نوع البلاغ أولاً (مفقود أو موجود)'); return; }
+  if (!this.checkValidity()) { this.classList.add('was-validated'); return; }
+
+  // Build item object
+  const questions = [];
+  document.querySelectorAll('.question-item').forEach(item => {
+    const inputs = item.querySelectorAll('input');
+    if (inputs[0].value && inputs[1].value) questions.push({ question: inputs[0].value, answer: inputs[1].value });
+  });
+
+  const imgSrc = document.getElementById('imagePreview').src || 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80';
+  const newItem = {
+    id: Date.now(),
+    title: document.getElementById('itemTitle').value,
+    description: document.getElementById('itemDesc').value,
+    category: document.getElementById('itemCategory').value,
+    status: selectedType,
+    city: document.getElementById('itemCity').value,
+    location: document.getElementById('itemLocation').value || '',
+    date: document.getElementById('itemDate').value,
+    image: imgSrc.startsWith('data:') ? imgSrc : 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80',
+    contact: document.getElementById('itemContact').value,
+    postedBy: 'أنت',
+    verified: questions.length > 0,
+    verificationQuestions: questions
+  };
+
+  const stored = getFromStorage('laqeet_items');
+  stored.push(newItem);
+  saveToStorage('laqeet_items', stored);
+
+  new bootstrap.Modal(document.getElementById('successModal')).show();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSelects();
+  const type = new URLSearchParams(location.search).get('type');
+  if (type) selectType(type);
+});
+</script>
+</body>
+</html>

@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LostAndFound.models
+namespace LostAndFound.Models
 {
-    internal class Claim
+    public class Claim
     {
         public int ClaimId { get; set; }
         public string Status { get; set; }
@@ -14,7 +10,5 @@ namespace LostAndFound.models
         public string VerificationAnswer { get; set; }
         public int UserId { get; set; }
         public int ItemId { get; set; }
-
-
     }
 }

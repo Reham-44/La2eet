@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LostAndFound.models
+namespace LostAndFound.Models
 {
-    internal class Item
+    public class Item
     {
         public int ItemId { get; set; }
         public string Title { get; set; }
@@ -18,9 +14,5 @@ namespace LostAndFound.models
         public bool IsResolved { get; set; }
 
         public int UserID { get; set; }
-
-
-
-
     }
 }

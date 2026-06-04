@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لقيت – منصة المفقودات والموجودات</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-laqeet">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><i class="fas fa-search-location me-2"></i>ل<span>قيت</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" href="index.html"><i class="fas fa-home me-1"></i> الرئيسية</a></li>
+        <li class="nav-item"><a class="nav-link" href="browse.html"><i class="fas fa-list me-1"></i> تصفح</a></li>
+        <li class="nav-item"><a class="nav-link" href="messages.html"><i class="fas fa-comments me-1"></i> الرسائل</a></li>
+        <li class="nav-item"><a class="nav-link" href="claims.html"><i class="fas fa-hand-holding me-1"></i> مطالباتي</a></li>
+        <li class="nav-item"><a class="nav-link" href="admin.html"><i class="fas fa-chart-bar me-1"></i> الإدارة</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-2">
+        <a href="profile.html" class="btn btn-outline-light btn-sm"><i class="fas fa-user me-1"></i> حسابي</a>
+        <a href="post.html" class="btn btn-post"><i class="fas fa-plus me-1"></i> أضف بلاغ</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <div class="fade-in">
+          <span class="badge bg-warning text-dark mb-3 px-3 py-2"><i class="fas fa-star me-1"></i> منصة رقم 1 في مصر للمفقودات</span>
+          <h1 class="hero-title">لقيت حاجتك؟<br>أو <span>ضيّعت</span> حاجة؟</h1>
+          <p class="hero-sub mt-3 mb-4">
+            منصة <strong>لقيت</strong> بتساعدك تلاقي أغراضك الضايعة أو توصّل اللي لقيته لصاحبه. سهل، سريع، وموثوق.
+          </p>
+          <div class="hero-search-box mb-4">
+            <i class="fas fa-search text-muted" style="margin:0 0.5rem"></i>
+            <input type="text" id="heroSearch" placeholder="ابحث عن محفظة، هاتف، مفاتيح..." />
+            <button onclick="doHeroSearch()"><i class="fas fa-search me-1"></i> ابحث</button>
+          </div>
+          <div class="d-flex gap-3 flex-wrap">
+            <a href="post.html?type=lost" class="btn btn-warning btn-lg"><i class="fas fa-exclamation-circle me-2"></i>بلّغ عن مفقود</a>
+            <a href="post.html?type=found" class="btn btn-outline-light btn-lg"><i class="fas fa-check-circle me-2"></i>أبلّغ عن موجود</a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat"><span class="num" id="statReturned">820+</span><span class="lbl">غرض اتردّ</span></div>
+            <div class="hero-stat"><span class="num" id="statItems">1240+</span><span class="lbl">بلاغ نشيط</span></div>
+            <div class="hero-stat"><span class="num" id="statUsers">3500+</span><span class="lbl">مستخدم</span></div>
+            <div class="hero-stat"><span class="num" id="statCities">18</span><span class="lbl">محافظة</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="hero-img-wrap" style="min-height:320px;">
+          <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80" class="hero-main-img" alt="لقيت" />
+          <div class="hero-float-card top shadow">
+            <div style="background:#dcfce7;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="fas fa-check text-success"></i>
+            </div>
+            <div>
+              <div style="font-weight:800;font-size:0.88rem;color:#1a1a2e">محفظة اتردّت!</div>
+              <div style="font-size:0.78rem;color:#6b7280">منذ 5 دقايق</div>
+            </div>
+          </div>
+          <div class="hero-float-card bottom shadow">
+            <div style="background:#fef3c7;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="fas fa-mobile-alt" style="color:#d97706"></i>
+            </div>
+            <div>
+              <div style="font-weight:800;font-size:0.88rem;color:#1a1a2e">هاتف iPhone تم إيجاده</div>
+              <div style="font-size:0.78rem;color:#6b7280">القاهرة – المعادي</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== QUICK FILTERS ===== -->
+<div class="quick-filters">
+  <div class="container">
+    <div class="d-flex gap-2 flex-wrap justify-content-center">
+      <button class="filter-btn active" onclick="filterByStatus('all', this)"><i class="fas fa-th me-1"></i> الكل</button>
+      <button class="filter-btn" onclick="filterByStatus('lost', this)"><i class="fas fa-exclamation-circle me-1"></i> مفقود</button>
+      <button class="filter-btn" onclick="filterByStatus('found', this)"><i class="fas fa-check-circle me-1"></i> موجود</button>
+      <button class="filter-btn" onclick="filterByCategory('هواتف', this)"><i class="fas fa-mobile-alt me-1"></i> هواتف</button>
+      <button class="filter-btn" onclick="filterByCategory('محافظ', this)"><i class="fas fa-wallet me-1"></i> محافظ</button>
+      <button class="filter-btn" onclick="filterByCategory('مفاتيح', this)"><i class="fas fa-key me-1"></i> مفاتيح</button>
+      <button class="filter-btn" onclick="filterByCategory('حيوانات', this)"><i class="fas fa-paw me-1"></i> حيوانات</button>
+      <button class="filter-btn" onclick="filterByCategory('إلكترونيات', this)"><i class="fas fa-laptop me-1"></i> إلكترونيات</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LATEST ITEMS ===== -->
+<section class="py-5">
+  <div class="container">
+    <div class="section-header d-flex justify-content-between align-items-start flex-wrap gap-2">
+      <div>
+        <h2>آخر البلاغات</h2>
+        <div class="section-divider"></div>
+        <p>أحدث المفقودات والموجودات المُضافة على المنصة</p>
+      </div>
+      <a href="browse.html" class="btn btn-outline-primary">عرض الكل <i class="fas fa-arrow-left me-1"></i></a>
+    </div>
+    <div class="row g-3" id="itemsGrid">
+      <!-- Filled by JS -->
+    </div>
+    <div class="text-center mt-4">
+      <a href="browse.html" class="btn btn-primary btn-lg px-5"><i class="fas fa-list me-2"></i>تصفح جميع البلاغات</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how-section">
+  <div class="container">
+    <div class="section-header text-center">
+      <h2>إزّاي لقيت بتشتغل؟</h2>
+      <div class="section-divider mx-auto"></div>
+      <p>3 خطوات بسيطة وتلاقي أو تردّ اللي ضاع</p>
+    </div>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4">
+        <div class="step-card">
+          <div class="step-icon"><i class="fas fa-plus-circle"></i></div>
+          <h5>1. ضيف بلاغ</h5>
+          <p>سجّل بيانات الغرض الضايع أو اللي لقيته مع صورة وموقع</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card">
+          <div class="step-icon" style="background:linear-gradient(135deg,#d97706,#f59e0b)"><i class="fas fa-search"></i></div>
+          <h5>2. ابحث وتواصل</h5>
+          <p>دور على بلاغات مشابهة وتواصل مع الشخص المعني مباشرة</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card">
+          <div class="step-icon" style="background:linear-gradient(135deg,#059669,#10b981)"><i class="fas fa-handshake"></i></div>
+          <h5>3. استردّ حاجتك</h5>
+          <p>تحقق من الهوية واستردّ غرضك بأمان وسهولة</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-section">
+  <div class="container">
+    <h2>ضيّعت حاجة أو لقيت حاجة؟</h2>
+    <p class="mb-4">انضم لأكثر من 3500 مستخدم بيستعملوا لقيت في مصر كلها</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <a href="post.html?type=lost" class="btn btn-warning btn-lg"><i class="fas fa-exclamation-circle me-2"></i>بلّغ عن مفقود</a>
+      <a href="register.html" class="btn btn-outline-light btn-lg"><i class="fas fa-user-plus me-2"></i>انضم مجاناً</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="footer-brand"><i class="fas fa-search-location me-2"></i>ل<span>قيت</span></div>
+        <p class="mt-2">منصة لقيت هي الحل الأول في مصر لاسترداد المفقودات وربط الناس بعضها لإعادة الأغراض لأصحابها.</p>
+        <div class="social-icons mt-3">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h5>الصفحات</h5>
+        <a href="index.html">الرئيسية</a>
+        <a href="browse.html">تصفح البلاغات</a>
+        <a href="post.html">أضف بلاغ</a>
+        <a href="messages.html">الرسائل</a>
+        <a href="claims.html">مطالباتي</a>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h5>المساعدة</h5>
+        <a href="#">كيف يعمل؟</a>
+        <a href="#">الأسئلة الشائعة</a>
+        <a href="#">سياسة الخصوصية</a>
+        <a href="#">الشروط والأحكام</a>
+        <a href="admin.html">لوحة الإدارة</a>
+      </div>
+      <div class="col-lg-4">
+        <h5>تواصل معنا</h5>
+        <p><i class="fas fa-envelope me-2 text-warning"></i>support@laqeet.eg</p>
+        <p><i class="fas fa-phone me-2 text-warning"></i>16000</p>
+        <p><i class="fas fa-map-marker-alt me-2 text-warning"></i>القاهرة، مصر</p>
+        <p class="mt-3 small" style="color:rgba(255,255,255,0.5)">الدعم متاح 24/7 على مدار اليوم</p>
+      </div>
+    </div>
+    <hr class="footer-divider" />
+    <p class="footer-bottom text-center">© 2025 لقيت. جميع الحقوق محفوظة. صُنع في مصر</p>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast-container">
+  <div id="mainToast" class="toast align-items-center text-bg-primary border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMsg"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="data.js"></script>
+<script>
+let currentFilter = { status: 'all', category: 'all' };
+
+function renderItems(items) {
+  const grid = document.getElementById('itemsGrid');
+  if (!items.length) {
+    grid.innerHTML = '<div class="col-12"><div class="empty-state"><i class="fas fa-search"></i><h5>مفيش نتائج</h5><p>جرّب تغيّر فلتر التصفية</p></div></div>';
+    return;
+  }
+  grid.innerHTML = items.slice(0, 6).map(item => `
+    <div class="col-md-4 col-sm-6 card-enter">
+      <div class="item-card" onclick="window.location='details.html?id=${item.id}'">
+        <div class="item-card-img-wrap">
+          <img src="${safeUrl(item.image)}" class="item-card-img" alt="${escapeHtml(item.title)}" loading="lazy" />
+          <div style="position:absolute;top:10px;right:10px">${getStatusBadge(item.status)}</div>
+        </div>
+        <div class="item-card-body">
+          <div class="item-card-title"><i class="fas ${getCategoryIcon(item.category)} text-primary me-1"></i>${escapeHtml(item.title)}</div>
+          <div class="item-card-desc">${escapeHtml(item.description)}</div>
+          <div class="item-card-meta">
+            <span><i class="fas fa-map-marker-alt"></i>${escapeHtml(item.city)}</span>
+            <span><i class="fas fa-calendar"></i>${formatDate(item.date)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function applyFilters() {
+  let items = getAllItems();
+  if (currentFilter.status !== 'all') items = items.filter(i => i.status === currentFilter.status);
+  if (currentFilter.category !== 'all') items = items.filter(i => i.category === currentFilter.category);
+  renderItems(items);
+}
+
+function filterByStatus(s, btn) {
+  currentFilter.status = s;
+  currentFilter.category = 'all';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function filterByCategory(c, btn) {
+  currentFilter.category = c;
+  currentFilter.status = 'all';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function doHeroSearch() {
+  const q = document.getElementById('heroSearch').value.trim();
+  if (q) window.location = `browse.html?q=${encodeURIComponent(q)}`;
+  else window.location = 'browse.html';
+}
+
+document.getElementById('heroSearch').addEventListener('keydown', e => { if (e.key === 'Enter') doHeroSearch(); });
+
+// Animate stats
+function animateNum(el, target) {
+  let cur = 0;
+  const step = Math.ceil(target / 60);
+  const timer = setInterval(() => {
+    cur = Math.min(cur + step, target);
+    el.textContent = cur.toLocaleString('ar-EG') + '+';
+    if (cur >= target) clearInterval(timer);
+  }, 25);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  applyFilters();
+});
+</script>
+</body>
+</html>
