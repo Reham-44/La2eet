@@ -1,5 +1,174 @@
-<!-- Admin Dashboard View - Placeholder -->
 @{
+    Layout = null;
     ViewData["Title"] = "لوحة الإدارة";
 }
-<p>لوحة الإدارة سيكون هنا</p>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - لقيت</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="~/css/styles.css" />
+</head>
+<body>
+
+
+<div class="admin-header">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <div>
+        <h1 class="fw-bold mb-1"><i class="fas fa-chart-bar me-2"></i>لوحة الإدارة</h1>
+        <p class="mb-0" style="color:rgba(255,255,255,0.75)">متابعة البلاغات، المطالبات، وحالة المنصة</p>
+      </div>
+      <a href="@Url.Action("Browse", "Items")" class="btn btn-warning"><i class="fas fa-list me-1"></i> عرض البلاغات</a>
+    </div>
+  </div>
+</div>
+
+<section class="py-4">
+  <div class="container">
+    <div class="row g-3 mb-4">
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--primary)"><i class="fas fa-clipboard-list"></i></div>
+          <div><p class="num" id="totalReports">0</p><p class="lbl">إجمالي البلاغات</p></div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--danger)"><i class="fas fa-exclamation-circle"></i></div>
+          <div><p class="num" id="lostReports">0</p><p class="lbl">مفقودات</p></div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--success)"><i class="fas fa-check-circle"></i></div>
+          <div><p class="num" id="foundReports">0</p><p class="lbl">موجودات</p></div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:var(--secondary)"><i class="fas fa-hand-holding"></i></div>
+          <div><p class="num">8</p><p class="lbl">مطالبات نشطة</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="detail-card">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <h5 class="mb-0"><i class="fas fa-clock me-2 text-primary"></i>أحدث البلاغات</h5>
+            <select class="form-select form-select-sm" id="statusFilter" style="width:auto" onchange="renderReports()">
+              <option value="all">كل الحالات</option>
+              <option value="lost">مفقود</option>
+              <option value="found">موجود</option>
+            </select>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>البلاغ</th>
+                  <th>المدينة</th>
+                  <th>الحالة</th>
+                  <th>التاريخ</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="reportsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="detail-card">
+          <h5><i class="fas fa-tasks me-2 text-warning"></i>مهام سريعة</h5>
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-primary" onclick="showAdminToast('تم تحديث حالة المراجعة')"><i class="fas fa-sync me-1"></i> تحديث المراجعة</button>
+            <button class="btn btn-outline-success" onclick="showAdminToast('تم تصدير التقرير التجريبي')"><i class="fas fa-file-export me-1"></i> تصدير تقرير</button>
+            <button class="btn btn-outline-danger" onclick="showAdminToast('تم تعليم البلاغات المشبوهة للمراجعة')"><i class="fas fa-flag me-1"></i> مراجعة المشبوه</button>
+          </div>
+        </div>
+
+        <div class="detail-card">
+          <h5><i class="fas fa-chart-pie me-2 text-success"></i>ملخص الفئات</h5>
+          <div id="categorySummary"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="toast-container">
+  <div id="adminToast" class="toast align-items-center text-bg-primary border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="adminToastBody"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/data.js"></script>
+<script>
+function renderStats() {
+  const items = getAllItems();
+  document.getElementById('totalReports').textContent = items.length;
+  document.getElementById('lostReports').textContent = items.filter(i => i.status === 'lost').length;
+  document.getElementById('foundReports').textContent = items.filter(i => i.status === 'found').length;
+}
+
+function renderReports() {
+  const status = document.getElementById('statusFilter').value;
+  let items = getAllItems().slice().sort((a, b) => b.date.localeCompare(a.date));
+  if (status !== 'all') items = items.filter(i => i.status === status);
+  document.getElementById('reportsTable').innerHTML = items.slice(0, 8).map(item => `
+    <tr>
+      <td>
+        <div class="d-flex align-items-center gap-2">
+          <img src="${safeUrl(item.image)}" alt="${escapeHtml(item.title)}" style="width:46px;height:46px;object-fit:cover;border-radius:8px" />
+          <div>
+            <div class="fw-bold">${escapeHtml(item.title)}</div>
+            <div class="small text-muted">${escapeHtml(item.category)}</div>
+          </div>
+        </div>
+      </td>
+      <td>${escapeHtml(item.city)}</td>
+      <td>${getStatusBadge(item.status)}</td>
+      <td>${formatDate(item.date)}</td>
+      <td><a href="@Url.Action("Details", "Items")?id=${item.id}" class="btn btn-sm btn-outline-primary">عرض</a></td>
+    </tr>
+  `).join('');
+}
+
+function renderCategorySummary() {
+  const items = getAllItems();
+  const counts = {};
+  items.forEach(item => counts[item.category] = (counts[item.category] || 0) + 1);
+  document.getElementById('categorySummary').innerHTML = Object.entries(counts).slice(0, 6).map(([cat, count]) => `
+    <div class="info-row">
+      <span class="label"><i class="fas ${getCategoryIcon(cat)} me-1"></i>${escapeHtml(cat)}</span>
+      <span class="value">${count}</span>
+    </div>
+  `).join('');
+}
+
+function showAdminToast(msg) {
+  document.getElementById('adminToastBody').textContent = msg;
+  new bootstrap.Toast(document.getElementById('adminToast')).show();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderStats();
+  renderReports();
+  renderCategorySummary();
+});
+</script>
+</body>
+</html>
