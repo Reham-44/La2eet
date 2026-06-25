@@ -17,12 +17,22 @@ namespace LostAndFound.ModelConfigrations
             builder.HasKey(c=>c.ClaimId);
             builder.Property(c=>c.Status)
                 .HasMaxLength(20);
-            builder.Property(c => c.CreatedAt);
+            builder.Property(c => c.CreatedAt)
+                .HasDefaultValueSql("GETDATE()"); ;
             builder.Property(c => c.VerificationAnswer)
                 .HasMaxLength(255);
             builder.Property(c => c.UserId);
             builder.Property(c => c.ItemId);
 
+            builder.HasOne(c => c.User)
+                .WithMany(u => u.Claims)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(c => c.Item)
+                .WithMany(i => i.Claims)
+                .HasForeignKey(c => c.ItemId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
 

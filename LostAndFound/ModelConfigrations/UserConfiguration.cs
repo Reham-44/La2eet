@@ -21,15 +21,18 @@ namespace LostAndFound.ModelConfigrations
             builder.Property(u => u.Email)
                 .HasMaxLength(100);
 
+
             builder.Property(u=>u.PasswordHash)
                 .HasMaxLength(255);
             builder.Property(u=>u.Phone)
                 .HasMaxLength(20);
             builder.Property(u=>u.Role)
-                .HasMaxLength (20);
-            builder.Property(u => u.IsVerified);
-            builder.Property(u => u.CreatedAt);
-
+                .HasMaxLength (20)
+                .HasDefaultValue("User");
+            builder.Property(u => u.IsVerified)
+                .HasDefaultValue(false);
+            builder.Property(u => u.CreatedAt)
+                .HasDefaultValueSql("GETDATE()");
         }
     }
 }

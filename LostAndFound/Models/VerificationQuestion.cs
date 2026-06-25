@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LostAndFound.Models
 {
@@ -9,5 +10,7 @@ namespace LostAndFound.Models
         public string ExpectedAnswerHash { get; set; }
         public DateTime CreatedAt { get; set; }
         public int ItemId { get; set; }
+
+        public Item Item { get; set; } = null!;
     }
 }

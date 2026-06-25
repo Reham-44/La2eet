@@ -20,15 +20,26 @@ namespace LostAndFound.ModelConfigrations
             builder.Property(m => m.Content)
                 .HasMaxLength(255);
 
-            builder.Property(m => m.SentAt);
+            builder.Property(m => m.SentAt)
+                       .HasDefaultValueSql("GETDATE()");
             builder.Property(m => m.IsRead);
             builder.Property(m => m.SenderId);
             builder.Property(m => m.ReceiverId);
             builder.Property(m => m.ItemId);
+            builder.HasOne(m => m.Sender)
+                .WithMany(u => u.SentMessages)
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(m => m.Receiver)
+                .WithMany(u => u.ReceivedMessages)
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-
-
+            builder.HasOne(m => m.Item)
+                .WithMany(i => i.Messages)
+                .HasForeignKey(m => m.ItemId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

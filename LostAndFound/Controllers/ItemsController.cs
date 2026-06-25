@@ -1,17 +1,26 @@
+using LostAndFound.DbContexts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LostAndFound.Controllers
 {
     public class ItemsController : Controller
     {
-        public IActionResult Browse(string q)
+        LostAndFoundDbContext context;
+        public ItemsController(LostAndFoundDbContext _context)
         {
-            return View();
-        }
+            context = _context;
 
+        }
+        public IActionResult Browse()
+        {
+            var items = context.Items.ToList();
+            return View(items);
+        }
         public IActionResult Details(int id)
         {
-            return View();
+            var item = context.Items.FirstOrDefault(d=>d.ItemId==id);
+
+            return View(item);
         }
 
         public IActionResult Create()

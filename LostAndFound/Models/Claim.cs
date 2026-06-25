@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LostAndFound.Models
 {
@@ -10,5 +11,8 @@ namespace LostAndFound.Models
         public string VerificationAnswer { get; set; }
         public int UserId { get; set; }
         public int ItemId { get; set; }
+
+        public User User { get; set; } = null!;
+        public Item Item { get; set; } = null!;
     }
 }

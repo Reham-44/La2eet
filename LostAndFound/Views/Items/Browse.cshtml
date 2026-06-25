@@ -1,5 +1,126 @@
-<!-- Items Browse View - Placeholder -->
+@model List<LostAndFound.Models.Item>
 @{
     ViewData["Title"] = "تصفح البلاغات";
 }
-<p>تصفح البلاغات سيكون هنا</p>
+<div class="browse-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <h1><i class="fas fa-list me-2"></i>تصفح البلاغات</h1>
+                <p class="mb-0 mt-1" style="color:rgba(255,255,255,0.8)">اعثر على أغراضك المفقودة أو تواصل مع أصحاب الموجودات</p>
+            </div>
+            <a href="post.html" class="btn btn-warning"><i class="fas fa-plus me-1"></i> أضف بلاغ جديد</a>
+        </div>
+    </div>
+</div>
+
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="filter-sidebar">
+                    <h6><i class="fas fa-filter me-1"></i> فلترة النتائج</h6>
+
+                    <div class="mb-3">
+                        <label class="form-label">بحث</label>
+                        <div class="input-group">
+                            <input type="text" id="searchInput" class="form-control" placeholder="ابحث هنا..." />
+                            <button class="btn btn-primary" onclick="applyFilters()"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">نوع البلاغ</label>
+                        <div class="d-flex flex-column gap-1">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="statusFilter" id="sAll" value="all" checked onchange="applyFilters()" />
+                                <label class="form-check-label" for="sAll">الكل</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="statusFilter" id="sLost" value="lost" onchange="applyFilters()" />
+                                <label class="form-check-label" for="sLost"><span class="badge bg-danger me-1">مفقود</span></label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="statusFilter" id="sFound" value="found" onchange="applyFilters()" />
+                                <label class="form-check-label" for="sFound"><span class="badge bg-success me-1">موجود</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="cityFilter">المدينة</label>
+                        <select class="form-select" id="cityFilter" onchange="applyFilters()">
+                            <option value="الكل">الكل</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="categoryFilter">الفئة</label>
+                        <select class="form-select" id="categoryFilter" onchange="applyFilters()">
+                            <option value="الكل">الكل</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="dateFrom">من تاريخ</label>
+                        <input type="date" class="form-control" id="dateFrom" onchange="applyFilters()" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="dateTo">إلى تاريخ</label>
+                        <input type="date" class="form-control" id="dateTo" onchange="applyFilters()" />
+                    </div>
+
+                    <button class="btn btn-outline-secondary w-100 btn-sm" onclick="resetFilters()"><i class="fas fa-redo me-1"></i> إعادة ضبط</button>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <span id="resultsCount" class="text-muted small fw-bold"></span>
+                    <div class="d-flex align-items-center gap-2">
+                        <label class="form-label mb-0 small">ترتيب:</label>
+                        <select class="form-select form-select-sm" id="sortSelect" onchange="applyFilters()" style="width:auto">
+                            <option value="newest">الأحدث أولاً</option>
+                            <option value="oldest">الأقدم أولاً</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3" id="itemsGrid">
+
+                    @foreach(var item in Model)
+                    {
+                                            
+                        <div class="col-md-4 col-sm-6 card-enter">
+                           <a asp-controller="Items"
+           asp-action="Details"
+           asp-route-id="@item.ItemId"
+           class="text-decoration-none text-dark"
+                           > <div class="item-card" >
+                                <div class="item-card-img-wrap">
+                                    <img  class="item-card-img" alt="img" loading="lazy" />
+                                    <div style="position:absolute;top:10px;right:10px;font-size:12px;">@item.Status</div>
+                                </div>
+                                <div class="item-card-body">
+                                    <div class="item-card-title"><i class="fas text-primary me-1">@item.Title</i></div>
+                                    <div class="item-card-desc">@item.Description</div>
+                                    <div class="item-card-meta">
+                                        <span><i class="fas fa-map-marker-alt"></i>@item.City</span>
+                                        <span><i class="fas fa-calendar"></i>@item.CreatedAt</span>
+                                    </div>
+                                </div>
+                            </div>
+                            </a>
+                        </div>
+                                         }
+                </div>
+
+                <nav class="mt-4" id="paginationWrap">
+                    <ul class="pagination justify-content-center" id="pagination"></ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>

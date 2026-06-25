@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace LostAndFound.Models
 {
@@ -9,10 +11,16 @@ namespace LostAndFound.Models
         public string Description { get; set; }
         public string City { get; set; }
         public string Status { get; set; }
+        public string? Image { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime LostOrFoundDate { get; set; }
+        public DateOnly LostOrFoundDate { get; set; }
         public bool IsResolved { get; set; }
 
-        public int UserID { get; set; }
+        public int UserId { get; set; }
+
+        public User User { get; set; } = null!;
+        public ICollection<VerificationQuestion> VerificationQuestions { get; set; } = new List<VerificationQuestion>();
+        public ICollection<Claim> Claims { get; set; } = new List<Claim>();
+        public ICollection<Message> Messages { get; set; } = new List<Message>();
     }
 }
