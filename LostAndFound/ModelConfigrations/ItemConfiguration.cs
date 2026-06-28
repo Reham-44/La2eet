@@ -7,6 +7,7 @@ using LostAndFound.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using LostAndFound.Enums;
 
 namespace LostAndFound.ModelConfigrations
 {
@@ -18,32 +19,30 @@ namespace LostAndFound.ModelConfigrations
             builder.ToTable("Items");
             builder.HasKey(i => i.ItemId);
             builder.Property(i => i.Title)
+                .IsRequired()
                 .HasMaxLength(55);
             builder.Property(i => i.Description)
                 .HasMaxLength(255);
-          builder.Property(i=>i.City)
-                .HasMaxLength(50);
-            builder.Property(i=>i.Status)
-                .HasMaxLength(10);
+            builder.Property(i => i.City)
+                  .IsRequired()
+                  .HasConversion<string>();
+            builder.Property(i => i.Location)
+                .HasMaxLength(100);
+            builder.Property(i => i.Status)
+               .IsRequired();
+            builder.Property(i => i.ReportStatus)
+               .HasDefaultValue(ReportStatus.Pending);
             builder.Property(i => i.CreatedAt)
-                .HasDefaultValueSql("GETDATE()"); ;
+                .HasDefaultValueSql("GETDATE()");
             builder.Property(i => i.LostOrFoundDate)
                 .HasColumnType("date");
-            builder.Property(i => i.IsResolved);
-            builder.Property(i => i.UserId);
-            builder.Property(i => i.Image)
-                .HasMaxLength(500);
-
+            builder.Property(i => i.IsResolved)
+                .HasDefaultValue(false);
+    
             builder.HasOne(i => i.User)
                 .WithMany(u => u.Items)
                 .HasForeignKey(i => i.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasMany(i => i.VerificationQuestions)
-                .WithOne(v => v.Item)
-                .HasForeignKey(v => v.ItemId)
-                .OnDelete(DeleteBehavior.Restrict);
-
 
              }
 

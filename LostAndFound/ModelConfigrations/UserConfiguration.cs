@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LostAndFound.Enums;
 using LostAndFound.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -19,16 +20,17 @@ namespace LostAndFound.ModelConfigrations
                 .IsRequired()
                 .HasMaxLength(100);
             builder.Property(u => u.Email)
+                .IsRequired()
                 .HasMaxLength(100);
-
+            builder.HasIndex(u => u.Email)
+                .IsUnique(); 
 
             builder.Property(u=>u.PasswordHash)
                 .HasMaxLength(255);
             builder.Property(u=>u.Phone)
                 .HasMaxLength(20);
-            builder.Property(u=>u.Role)
-                .HasMaxLength (20)
-                .HasDefaultValue("User");
+            builder.Property(u => u.Role)
+                .HasDefaultValue(Role.USER);
             builder.Property(u => u.IsVerified)
                 .HasDefaultValue(false);
             builder.Property(u => u.CreatedAt)

@@ -22,10 +22,7 @@ namespace LostAndFound.ModelConfigrations
 
             builder.Property(m => m.SentAt)
                        .HasDefaultValueSql("GETDATE()");
-            builder.Property(m => m.IsRead);
-            builder.Property(m => m.SenderId);
-            builder.Property(m => m.ReceiverId);
-            builder.Property(m => m.ItemId);
+
             builder.HasOne(m => m.Sender)
                 .WithMany(u => u.SentMessages)
                 .HasForeignKey(m => m.SenderId)

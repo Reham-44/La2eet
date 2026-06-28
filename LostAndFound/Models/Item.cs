@@ -1,6 +1,9 @@
-﻿using System;
+﻿using LostAndFound.Enums;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LostAndFound.Models
 {
@@ -9,9 +12,14 @@ namespace LostAndFound.Models
         public int ItemId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public string City { get; set; }
-        public string Status { get; set; }
-        public string? Image { get; set; }
+        public City City { get; set; }
+        public string? Location { get; set; }
+        public ItemType Status { get; set; }
+        public ReportStatus ReportStatus { get; set; }
+        [HiddenInput]
+        public string? ImageBase64 { get; set; }
+        [NotMapped]
+        public IFormFile? ImageFile { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateOnly LostOrFoundDate { get; set; }
         public bool IsResolved { get; set; }
@@ -23,4 +31,5 @@ namespace LostAndFound.Models
         public ICollection<Claim> Claims { get; set; } = new List<Claim>();
         public ICollection<Message> Messages { get; set; } = new List<Message>();
     }
+ 
 }

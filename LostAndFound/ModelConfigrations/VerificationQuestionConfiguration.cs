@@ -21,7 +21,6 @@ namespace LostAndFound.ModelConfigrations
                 .HasMaxLength(255);
             builder.Property(v => v.CreatedAt)
                    .HasDefaultValueSql("GETDATE()");
-            builder.Property(v => v.ItemId);
 
             builder.HasOne(v => v.Item)
                 .WithMany(i => i.VerificationQuestions)

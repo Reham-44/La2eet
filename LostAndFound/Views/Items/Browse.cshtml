@@ -9,7 +9,7 @@
                 <h1><i class="fas fa-list me-2"></i>تصفح البلاغات</h1>
                 <p class="mb-0 mt-1" style="color:rgba(255,255,255,0.8)">اعثر على أغراضك المفقودة أو تواصل مع أصحاب الموجودات</p>
             </div>
-            <a href="post.html" class="btn btn-warning"><i class="fas fa-plus me-1"></i> أضف بلاغ جديد</a>
+            <a asp-controller="Items" asp-action="Create" class="btn btn-warning"><i class="fas fa-plus me-1"></i> أضف بلاغ جديد</a>
         </div>
     </div>
 </div>
@@ -56,13 +56,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label" for="categoryFilter">الفئة</label>
-                        <select class="form-select" id="categoryFilter" onchange="applyFilters()">
-                            <option value="الكل">الكل</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
                         <label class="form-label" for="dateFrom">من تاريخ</label>
                         <input type="date" class="form-control" id="dateFrom" onchange="applyFilters()" />
                     </div>
@@ -92,29 +85,49 @@
 
                     @foreach(var item in Model)
                     {
-                                            
                         <div class="col-md-4 col-sm-6 card-enter">
-                           <a asp-controller="Items"
-           asp-action="Details"
-           asp-route-id="@item.ItemId"
-           class="text-decoration-none text-dark"
-                           > <div class="item-card" >
-                                <div class="item-card-img-wrap">
-                                    <img  class="item-card-img" alt="img" loading="lazy" />
-                                    <div style="position:absolute;top:10px;right:10px;font-size:12px;">@item.Status</div>
-                                </div>
-                                <div class="item-card-body">
-                                    <div class="item-card-title"><i class="fas text-primary me-1">@item.Title</i></div>
-                                    <div class="item-card-desc">@item.Description</div>
-                                    <div class="item-card-meta">
-                                        <span><i class="fas fa-map-marker-alt"></i>@item.City</span>
-                                        <span><i class="fas fa-calendar"></i>@item.CreatedAt</span>
+                            <a asp-controller="Items"
+                               asp-action="Details"
+                               asp-route-id="@item.ItemId"
+                               class="text-decoration-none text-dark">
+                                <div class="item-card" center bordernone>
+                                    <div class="item-card-img-wrap">
+
+                                        @if (!string.IsNullOrEmpty(item.ImageBase64))
+                                        {
+                                            <img src="@item.ImageBase64"
+                                                 class="item-card-img"
+                                                 alt="@item.Title"
+                                                 loading="lazy" />
+                                        }
+                                        else
+                                        {
+                                            <div class="item-card-placeholder">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                        }
+
+                                        <span class="badge @(item.Status == ItemType.Lost ? "bg-danger" : "bg-success") position-absolute top-0 end-0 m-2">
+                                            @item.Status
+                                        </span>
+
+                                    </div>
+                                    <div class="item-card-body">
+                                        <div class="item-card-title">
+                                            <i class="fas fa-box text-primary me-1"></i>
+                                            <span>@item.Title</span>
+                                        </div>
+                                        <div class="item-card-desc">@item.Description</div>
+                                        <div class="item-card-meta">
+                                            <span><i class="fas fa-map-marker-alt"></i>@item.City</span>
+                                            <span><i class="fas fa-calendar"></i>@item.LostOrFoundDate.ToString("dd-MM-yyyy")</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             </a>
                         </div>
-                                         }
+                    
+}
                 </div>
 
                 <nav class="mt-4" id="paginationWrap">

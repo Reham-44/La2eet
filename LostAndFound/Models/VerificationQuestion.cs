@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LostAndFound.Models
 {
@@ -10,7 +11,7 @@ namespace LostAndFound.Models
         public string ExpectedAnswerHash { get; set; }
         public DateTime CreatedAt { get; set; }
         public int ItemId { get; set; }
-
+        [NotMapped]
         public Item Item { get; set; } = null!;
     }
 }

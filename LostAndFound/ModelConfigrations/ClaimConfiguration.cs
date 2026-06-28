@@ -15,14 +15,11 @@ namespace LostAndFound.ModelConfigrations
         {
             builder.ToTable("Claims");
             builder.HasKey(c=>c.ClaimId);
-            builder.Property(c=>c.Status)
-                .HasMaxLength(20);
+            builder.Property(c => c.ClaimStatus);
             builder.Property(c => c.CreatedAt)
                 .HasDefaultValueSql("GETDATE()"); ;
             builder.Property(c => c.VerificationAnswer)
                 .HasMaxLength(255);
-            builder.Property(c => c.UserId);
-            builder.Property(c => c.ItemId);
 
             builder.HasOne(c => c.User)
                 .WithMany(u => u.Claims)

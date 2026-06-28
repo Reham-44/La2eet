@@ -35,8 +35,15 @@
         <div class="container" id="detailsContainer">
         <div class="row g-4">
             <div class="col-lg-8">
-                @* <img src="${safeUrl(currentItem.image)}" class="details-img mb-3" alt="@Model.Title" /> *@
 
+                @if (!string.IsNullOrEmpty(Model.ImageBase64))
+                {
+                    <img src="@Model.ImageBase64"
+                         class="details-img object-fit-lg-contain mb-3" alt="@Model.Title"
+                         loading="lazy" 
+                         
+                         />
+                }
                 <div class="detail-card">
                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
                         <h3 class="fw-bold mb-0">@Model.Title</h3>
@@ -44,8 +51,9 @@
                     <p style="color:var(--gray);line-height:1.8">@Model.Description</p>
 
                     <div class="info-row"><span class="label"><i class="fas fa-map-marker-alt me-1"></i> المدينة</span><span class="value">@Model.City</span></div>
+                    <div class="info-row"><span class="label"><i class="fas fa-location-arrow me-1"></i> الموقع</span><span class="value">@Model.Location</span></div>
                     <div class="info-row"><span class="label"><i class="fas fa-calendar me-1"></i> التاريخ</span><span class="value">@Model.LostOrFoundDate</span></div>
-                    <div class="info-row"><span class="label"><i class="fas fa-user me-1"></i> نشر بواسطة</span><span class="value">@Model.UserId</span></div>
+                    <div class="info-row"><span class="label"><i class="fas fa-user me-1"></i> نشر بواسطة</span><span class="value">@Model.User.FullName</span></div>
                 </div>
 
                 <div class="safety-tip mb-3">
@@ -86,11 +94,16 @@
                     @for(int i = 0; i < 3; i++)
                     {
                        <div class="d-flex gap-2 mb-3 align-items-start" style="cursor:pointer">
-                        @* <img src="${safeUrl(r.image)}" style="width:55px;height:55px;object-fit:cover;border-radius:8px;flex-shrink:0" /> *@
+                            <img src="@(string.IsNullOrEmpty(Model.ImageBase64)
+                                     ? "/images/no-image.png"
+                                     : Model.ImageBase64)"
+                             class="item-card-img" style="width:55px;height:55px;object-fit:cover;border-radius:8px;flex-shrink:0" />
                         <div>
                             <div class="fw-bold small">@Model.Title</div>
                             <div class="small text-muted">@Model.City</div>
-                            @* ${getStatusBadge(r.status)} *@
+                            <span class="badge @(Model.Status == ItemType.Lost ? "bg-danger" : "bg-success")">
+                                @Model.Status
+                            </span>
                         </div>
                     </div>  
                     }
@@ -165,7 +178,7 @@
           currentItem = getAllItems().find(i => i.id === id);
 
           if (!currentItem) {
-            document.getElementById('detailsContainer').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h5>البلاغ مش موجود</h5><a href="browse.html" class="btn btn-primary mt-2">العودة للتصفح</a></div>';
+            document.getElementById('detailsContainer').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h5>البلاغ مش موجود</h5><a asp-controller="Items" asp=action="Browse" class="btn btn-primary mt-2">العودة للتصفح</a></div>';
             return;
           }
 
@@ -215,7 +228,7 @@
                   ` : `
                     <button class="btn btn-success w-100 mb-2 btn-lg" onclick="openContactModal()"><i class="fas fa-comments me-2"></i>تواصل مع الفاقد</button>
                   `}
-                  <a href="browse.html" class="btn btn-outline-secondary w-100"><i class="fas fa-list me-2"></i>عرض مشابهة</a>
+                  <a asp-controller="Items" asp=action="Browse" class="btn btn-outline-secondary w-100"><i class="fas fa-list me-2"></i>عرض مشابهة</a>
                 </div>
 
                 <div class="detail-card">

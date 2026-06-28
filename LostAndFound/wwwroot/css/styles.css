@@ -82,8 +82,7 @@ body {
 
 .navbar-toggler { border-color: rgba(255,255,255,0.4); }
 .navbar-toggler-icon { filter: invert(1); }
-
-/* ===== Hero ===== */
+ /* ===== Hero ===== */
 .hero-section {
   background: linear-gradient(135deg, var(--primary-dark) 0%, #1565c0 50%, var(--primary) 100%);
   padding: 5rem 0 4rem;
@@ -285,9 +284,30 @@ body {
 .item-card-img {
   width: 100%;
   height: 200px;
-  object-fit: cover;
+  object-fit: contain;
   transition: var(--transition);
 }
+
+.item-card-placeholder {
+    height: 220px;
+    background: #f8fafc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #9ca3af;
+    border-bottom: 1px solid #eee;
+}
+
+    .item-card-placeholder i {
+        font-size: 60px;
+        margin-bottom: 12px;
+        color: #cbd5e1;
+    }
+
+    .item-card-placeholder span {
+        font-size: 15px;
+        font-weight: 600;
+    }
 
 .item-card:hover .item-card-img {
   transform: scale(1.03);
@@ -325,8 +345,7 @@ body {
   flex-wrap: wrap;
 }
 .item-card-meta span { display: flex; align-items: center; gap: 0.3rem; }
-
-/* ===== How It Works ===== */
+ /* ===== How It Works ===== */
 .how-section { background: var(--primary-light); padding: 4rem 0; }
 
 .step-card {
@@ -503,6 +522,32 @@ body {
   background: var(--light-bg);
 }
 
+input[type="radio"] {
+    appearance: none;
+
+}
+    .type-option {
+        display: block;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+        .type-option:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+   #lost:checked + .type-option {
+    border-color: #dc3545 !important;
+    background: #fff5f5;
+}
+
+
+#found:checked + .type-option {
+    border-color: #198754 !important;
+    background: #f0fff4;
+}
+
 .upload-area:hover { border-color: var(--primary); background: var(--primary-light); }
 .upload-area i { font-size: 2.5rem; color: var(--gray); margin-bottom: 0.7rem; }
 .upload-area p { color: var(--gray); margin: 0; font-size: 0.9rem; }
@@ -568,7 +613,6 @@ body {
   background: #fff;
   padding: 0 0.8rem;
 }
-
 /* ===== Profile Page ===== */
 .profile-header {
   background: linear-gradient(135deg, var(--primary-dark), var(--primary));

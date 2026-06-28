@@ -68,7 +68,7 @@
         </div>
         <div class="row g-3" id="itemsGrid">
 
-            @foreach (var item in Model)
+            @foreach (var item in Model.Take<Item>(6))
             {
 
                 <div class="col-md-4 col-sm-6 card-enter">
@@ -76,17 +76,37 @@
                        asp-action="Details"
                        asp-route-id="@item.ItemId"
                        class="text-decoration-none text-dark">
-                        <div class="item-card">
+                        <div class="item-card" center bordernone >
                             <div class="item-card-img-wrap">
-                                <img class="item-card-img" alt="img" loading="lazy" />
-                                <div style="position:absolute;top:10px;right:10px;font-size:12px;">@item.Status</div>
-                            </div>
+
+                                    @if (!string.IsNullOrEmpty(item.ImageBase64))
+                                    {
+                                        <img src="@item.ImageBase64"
+                                             class="item-card-img"
+                                             alt="@item.Title"
+                                             loading="lazy" />
+                                    }
+                                    else
+                                    {
+                                        <div class="item-card-placeholder">
+                                            <i class="fas fa-image"></i>
+                                        </div>
+                                    }
+
+                                    <span class="badge @(item.Status == ItemType.Lost ? "bg-danger" : "bg-success") position-absolute top-0 end-0 m-2">
+                                        @item.Status
+                                    </span>
+
+                                </div>
                             <div class="item-card-body">
-                                <div class="item-card-title"><i class="fas text-primary me-1">@item.Title</i></div>
+                                <div class="item-card-title">
+                                    <i class="fas fa-box text-primary me-1"></i>
+                                    <span>@item.Title</span>
+                                </div>
                                 <div class="item-card-desc">@item.Description</div>
                                 <div class="item-card-meta">
                                     <span><i class="fas fa-map-marker-alt"></i>@item.City</span>
-                                    <span><i class="fas fa-calendar"></i>@item.CreatedAt</span>
+                                    <span><i class="fas fa-calendar"></i>@item.CreatedAt.ToString("dd MMM yyyy")</span>
                                 </div>
                             </div>
                         </div>
