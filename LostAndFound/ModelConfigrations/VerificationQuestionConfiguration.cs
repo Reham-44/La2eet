@@ -18,14 +18,14 @@ namespace LostAndFound.ModelConfigrations
             builder.Property(v => v.QuestionText)
                 .HasMaxLength(250);
             builder.Property(v => v.ExpectedAnswerHash)
-            .HasMaxLength(255);
-            builder.Property(v => v.CreatedAt); ;
-            builder.Property(v => v.ItemId);
+                .HasMaxLength(255);
+            builder.Property(v => v.CreatedAt)
+                   .HasDefaultValueSql("GETDATE()");
 
-
-
-
-
+            builder.HasOne(v => v.Item)
+                .WithMany(i => i.VerificationQuestions)
+                .HasForeignKey(v => v.ItemId)
+.OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

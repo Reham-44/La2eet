@@ -22,7 +22,7 @@ namespace LostAndFound.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LostAndFound.models.Claim", b =>
+            modelBuilder.Entity("LostAndFound.Models.Claim", b =>
                 {
                     b.Property<int>("ClaimId")
                         .ValueGeneratedOnAdd()
@@ -30,16 +30,16 @@ namespace LostAndFound.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClaimId"));
 
+                    b.Property<int>("ClaimStatus")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -51,10 +51,14 @@ namespace LostAndFound.Migrations
 
                     b.HasKey("ClaimId");
 
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Claims", (string)null);
                 });
 
-            modelBuilder.Entity("LostAndFound.models.Item", b =>
+            modelBuilder.Entity("LostAndFound.Models.Item", b =>
                 {
                     b.Property<int>("ItemId")
                         .ValueGeneratedOnAdd()
@@ -64,42 +68,57 @@ namespace LostAndFound.Migrations
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<bool>("IsResolved")
-                        .HasColumnType("bit");
+                    b.Property<string>("ImageBase64")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("LostOrFoundDate")
+                    b.Property<bool>("IsResolved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateOnly>("LostOrFoundDate")
                         .HasColumnType("date");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<int>("ReportStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("nvarchar(55)");
 
-                    b.Property<int>("UserID")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("ItemId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Items", (string)null);
                 });
 
-            modelBuilder.Entity("LostAndFound.models.Message", b =>
+            modelBuilder.Entity("LostAndFound.Models.Message", b =>
                 {
                     b.Property<int>("MessageId")
                         .ValueGeneratedOnAdd()
@@ -112,9 +131,6 @@ namespace LostAndFound.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
                     b.Property<int>("ItemId")
                         .HasColumnType("int");
 
@@ -125,14 +141,22 @@ namespace LostAndFound.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("SentAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.HasKey("MessageId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Messages", (string)null);
                 });
 
-            modelBuilder.Entity("LostAndFound.models.User", b =>
+            modelBuilder.Entity("LostAndFound.Models.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -141,7 +165,9 @@ namespace LostAndFound.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -154,27 +180,34 @@ namespace LostAndFound.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsVerified")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
-                    b.Property<int>("PasswordHash")
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("Phone")
-                        .HasMaxLength(20)
-                        .HasColumnType("int");
-
-                    b.Property<string>("Role")
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("Role")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.HasKey("UserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("LostAndFound.models.VerificationQuestion", b =>
+            modelBuilder.Entity("LostAndFound.Models.VerificationQuestion", b =>
                 {
                     b.Property<int>("QId")
                         .ValueGeneratedOnAdd()
@@ -183,7 +216,9 @@ namespace LostAndFound.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QId"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("ExpectedAnswerHash")
                         .IsRequired()
@@ -200,7 +235,97 @@ namespace LostAndFound.Migrations
 
                     b.HasKey("QId");
 
+                    b.HasIndex("ItemId");
+
                     b.ToTable("VerificationQuestions", (string)null);
+                });
+
+            modelBuilder.Entity("LostAndFound.Models.Claim", b =>
+                {
+                    b.HasOne("LostAndFound.Models.Item", "Item")
+                        .WithMany("Claims")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LostAndFound.Models.User", "User")
+                        .WithMany("Claims")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LostAndFound.Models.Item", b =>
+                {
+                    b.HasOne("LostAndFound.Models.User", "User")
+                        .WithMany("Items")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LostAndFound.Models.Message", b =>
+                {
+                    b.HasOne("LostAndFound.Models.Item", "Item")
+                        .WithMany("Messages")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LostAndFound.Models.User", "Receiver")
+                        .WithMany("ReceivedMessages")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LostAndFound.Models.User", "Sender")
+                        .WithMany("SentMessages")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("LostAndFound.Models.VerificationQuestion", b =>
+                {
+                    b.HasOne("LostAndFound.Models.Item", "Item")
+                        .WithMany("VerificationQuestions")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("LostAndFound.Models.Item", b =>
+                {
+                    b.Navigation("Claims");
+
+                    b.Navigation("Messages");
+
+                    b.Navigation("VerificationQuestions");
+                });
+
+            modelBuilder.Entity("LostAndFound.Models.User", b =>
+                {
+                    b.Navigation("Claims");
+
+                    b.Navigation("Items");
+
+                    b.Navigation("ReceivedMessages");
+
+                    b.Navigation("SentMessages");
                 });
 #pragma warning restore 612, 618
         }
