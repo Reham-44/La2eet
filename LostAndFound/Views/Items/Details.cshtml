@@ -54,6 +54,22 @@
                     <div class="info-row"><span class="label"><i class="fas fa-location-arrow me-1"></i> الموقع</span><span class="value">@Model.Location</span></div>
                     <div class="info-row"><span class="label"><i class="fas fa-calendar me-1"></i> التاريخ</span><span class="value">@Model.LostOrFoundDate</span></div>
                     <div class="info-row"><span class="label"><i class="fas fa-user me-1"></i> نشر بواسطة</span><span class="value">@Model.User.FullName</span></div>
+                    @* @if(User.IsInRole("ADMIN")){} *@
+                    @if (Model.User != null && Model.User.IsBanned)
+                    {
+                        <span class="badge bg-danger mt-2 p-2">
+                            <i class="fas fa-user-slash me-1"></i> هذا المستخدم محظور
+                        </span>
+                    }
+                    else
+                    {
+                        <form asp-controller="Admin" asp-action="BanUser" method="post" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حظر هذا المستخدم نهائياً؟');">
+                            <input type="hidden" name="userId" value="@Model.UserId" />
+                            <button type="submit" class="btn btn-danger btn-sm mt-2">
+                                <i class="fas fa-ban me-1"></i> حظر
+                            </button>
+                        </form>
+                    }
                 </div>
 
                 <div class="safety-tip mb-3">

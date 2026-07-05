@@ -15,6 +15,7 @@ namespace LostAndFound.Models
         public string PasswordHash { get; set; }
         public string Phone { get; set; }
         public bool IsVerified { get; set; }
+        public bool IsBanned { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public Role Role { get; set; }
 

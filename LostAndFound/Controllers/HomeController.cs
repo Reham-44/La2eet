@@ -15,7 +15,7 @@ namespace LostAndFound.Controllers
         public IActionResult Index()
         {
             var items = context.Items.
-                Where(i=>i.ReportStatus==ReportStatus.Approved).
+                Where(i=>i.ReportStatus==ReportStatus.Approved && i.User.IsBanned==false).
                 OrderByDescending(i=>i.CreatedAt)
                 .Take(6)
                 .ToList();

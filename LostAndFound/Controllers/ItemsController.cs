@@ -16,7 +16,8 @@ namespace LostAndFound.Controllers
         }
         public IActionResult Browse(string? search, ItemType? statusFilter, City? cityFilter, DateTime? dateFrom, DateTime? dateTo)
         {
-            var query = context.Items.Where(i => i.ReportStatus == ReportStatus.Approved).AsQueryable();
+            var query = context.Items.Where(i => i.ReportStatus == ReportStatus.Approved && i.User.IsBanned ==false)
+                                     .AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -84,7 +85,7 @@ namespace LostAndFound.Controllers
                 string base64 = Convert.ToBase64String(ms.ToArray());
                     item.ImageBase64 = $"data:{item.ImageFile.ContentType};base64,{base64}";
                                    } }
-            item.UserId = 1;
+            item.UserId = 3;
             item.ReportStatus = ReportStatus.Pending;
             //if (!ModelState.IsValid)
             //{
