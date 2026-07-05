@@ -1,21 +1,21 @@
-using LostAndFound.DbContexts;
 using Microsoft.AspNetCore.Mvc;
+using LostAndFound.DbContexts;
 
 namespace LostAndFound.Controllers
 {
     public class HomeController : Controller
-    {       
-               LostAndFoundDbContext context;
- public HomeController(LostAndFoundDbContext _context)
-        {
-            context = _context;
+    {
+        private readonly LostAndFoundDbContext _context;
 
+        public HomeController(LostAndFoundDbContext context)
+        {
+            _context = context;
         }
+
         public IActionResult Index()
         {
-            var items = context.Items.ToList();
+            var items = _context.Items.ToList();
             return View(items);
         }
-
     }
 }
