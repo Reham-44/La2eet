@@ -14,11 +14,40 @@ namespace LostAndFound.Controllers
             context = _context;
 
         }
-        public IActionResult Browse()
+        public IActionResult Browse(string? search, ItemType? statusFilter, City? cityFilter, DateTime? dateFrom, DateTime? dateTo)
         {
-            var items = context.Items.ToList();
-            return View(items);
+            var query = context.Items.Where(i => i.ReportStatus == ReportStatus.Approved).AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(i => i.Title.Contains(search) || i.Description.Contains(search));
+            }
+
+            if (statusFilter.HasValue)
+            {
+                query = query.Where(i => i.Status == statusFilter.Value);
+            }
+
+            if (cityFilter.HasValue)
+            {
+                query = query.Where(i => i.City == cityFilter.Value);
+            }
+
+            if (dateFrom.HasValue)
+            {
+                var from = DateOnly.FromDateTime(dateFrom.Value);
+                query = query.Where(i => i.LostOrFoundDate >= from);
+            }
+            if (dateTo.HasValue)
+            {
+                var to = DateOnly.FromDateTime(dateTo.Value);
+                query = query.Where(i => i.LostOrFoundDate <= to);
+            }
+
+            var filteredItems = query.OrderByDescending(i => i.CreatedAt).ToList();
+            return View(filteredItems);
         }
+        
         public IActionResult Details(int id)
         {
             var item = context.Items
@@ -55,7 +84,7 @@ namespace LostAndFound.Controllers
                 string base64 = Convert.ToBase64String(ms.ToArray());
                     item.ImageBase64 = $"data:{item.ImageFile.ContentType};base64,{base64}";
                                    } }
-            item.UserId = 11;
+            item.UserId = 1;
             item.ReportStatus = ReportStatus.Pending;
             //if (!ModelState.IsValid)
             //{
