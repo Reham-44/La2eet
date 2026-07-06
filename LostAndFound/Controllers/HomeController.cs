@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using LostAndFound.Enums;
 using LostAndFound.DbContexts;
 
 namespace LostAndFound.Controllers
@@ -14,7 +15,11 @@ namespace LostAndFound.Controllers
 
         public IActionResult Index()
         {
-            var items = _context.Items.ToList();
+            var items = _context.Items.
+                Where(i=>i.ReportStatus==ReportStatus.Approved && i.User.IsBanned==false).
+                OrderByDescending(i=>i.CreatedAt)
+                .Take(6)
+                .ToList();
             return View(items);
         }
     }
