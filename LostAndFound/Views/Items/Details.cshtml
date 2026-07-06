@@ -8,31 +8,33 @@
     <h2>Item Not Found</h2>
     return;
 }
-    <div style="background:#fff;border-bottom:1px solid var(--border);padding:0.75rem 0;">
-        <div class="container">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0 small">
+<div style="background:#fff;border-bottom:1px solid var(--border);padding:0.75rem 0;">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
                 <li class="breadcrumb-item">
                     <a asp-controller="Home"
                        asp-action="Index"
                        class="text-primary">
                         الرئيسية
-                    </a></li>
-                                    <li class="breadcrumb-item">
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
                     <a asp-controller="Items"
                        asp-action="Browse"
                        class="text-primary">
                         تصفح
-                    </a></li>
-                
-                 <li class="breadcrumb-item active" id="breadTitle">تفاصيل البلاغ</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
+                    </a>
+                </li>
 
-    <section class="py-4">
-        <div class="container" id="detailsContainer">
+                <li class="breadcrumb-item active" id="breadTitle">تفاصيل البلاغ</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-4">
+    <div class="container" id="detailsContainer">
         <div class="row g-4">
             <div class="col-lg-8">
 
@@ -40,36 +42,38 @@
                 {
                     <img src="@Model.ImageBase64"
                          class="details-img object-fit-lg-contain mb-3" alt="@Model.Title"
-                         loading="lazy" 
-                         
-                         />
+                         loading="lazy" />
                 }
                 <div class="detail-card">
                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
                         <h3 class="fw-bold mb-0">@Model.Title</h3>
-@Model.Status</div>
+                        @Model.Status
+                    </div>
                     <p style="color:var(--gray);line-height:1.8">@Model.Description</p>
 
                     <div class="info-row"><span class="label"><i class="fas fa-map-marker-alt me-1"></i> المدينة</span><span class="value">@Model.City</span></div>
                     <div class="info-row"><span class="label"><i class="fas fa-location-arrow me-1"></i> الموقع</span><span class="value">@Model.Location</span></div>
                     <div class="info-row"><span class="label"><i class="fas fa-calendar me-1"></i> التاريخ</span><span class="value">@Model.LostOrFoundDate</span></div>
                     <div class="info-row"><span class="label"><i class="fas fa-user me-1"></i> نشر بواسطة</span><span class="value">@Model.User.FullName</span></div>
-                    @* @if(User.IsInRole("ADMIN")){} *@
-                    @if (Model.User != null && Model.User.IsBanned)
-                    {
-                        <span class="badge bg-danger mt-2 p-2">
-                            <i class="fas fa-user-slash me-1"></i> هذا المستخدم محظور
-                        </span>
-                    }
-                    else
-                    {
-                        <form asp-controller="Admin" asp-action="BanUser" method="post" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حظر هذا المستخدم نهائياً؟');">
-                            <input type="hidden" name="userId" value="@Model.UserId" />
-                            <button type="submit" class="btn btn-danger btn-sm mt-2">
-                                <i class="fas fa-ban me-1"></i> حظر
-                            </button>
-                        </form>
-                    }
+                      @if(User.IsInRole("ADMIN"))
+                      {
+
+                        @if (Model.User != null && Model.User.IsBanned)
+                        {
+                            <span class="badge bg-danger mt-2 p-2">
+                                <i class="fas fa-user-slash me-1"></i> هذا المستخدم محظور
+                            </span>
+                        }
+                        else
+                        {
+                            <form asp-controller="Admin" asp-action="BanUser" method="post" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حظر هذا المستخدم نهائياً؟');">
+                                <input type="hidden" name="userId" value="@Model.UserId" />
+                                <button type="submit" class="btn btn-danger btn-sm mt-2">
+                                    <i class="fas fa-ban me-1"></i> حظر
+                                </button>
+                            </form>
+                         }
+                     }
                 </div>
 
                 <div class="safety-tip mb-3">
@@ -83,15 +87,38 @@
             <div class="col-lg-4">
                 <div class="detail-card">
                     <h5><i class="fas fa-bolt me-2 text-warning"></i>إجراءات</h5>
-                    @* ${isFound ? ` *@
-                    <button class="btn btn-primary w-100 mb-2 btn-lg" onclick="openClaimModal()"><i class="fas fa-hand-holding me-2"></i>المطالبة بالغرض</button>
-                    <div class="safety-tip mb-2">
-                        <i class="fas fa-shield-alt"></i>
-                        <div>المحادثة بتتفتح بعد إجابة أسئلة التحقق بنجاح، عشان الواجد وصاحب الغرض يبقوا متأكدين من بعض.</div>
-                    </div>
-                    @* ` : ` *@
-                    <button class="btn btn-success w-100 mb-2 btn-lg" onclick="openContactModal()"><i class="fas fa-comments me-2"></i>تواصل مع الفاقد</button>
-                    @* `} *@
+
+                    @{
+                        var currentUserId = User.Identity != null && User.Identity.IsAuthenticated
+                        ? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                        : null;
+                        bool isOwner = currentUserId != null && Model.UserId.ToString() == currentUserId;
+                    }
+
+                    @if (isOwner)
+                    {
+                        <div class="alert alert-info small mb-2">
+                            <i class="fas fa-info-circle me-1"></i> ده البلاغ بتاعك، هتشوف المطالبات الواردة عليه من صفحة "مطالباتي".
+                        </div>
+                        <a asp-controller="Claims" asp-action="Index" class="btn btn-primary w-100 mb-2 btn-lg">
+                            <i class="fas fa-inbox me-2"></i>عرض المطالبات الواردة
+                        </a>
+                    }
+                    else if (Model.Status == ItemType.Found)
+                    {
+                        <a asp-controller="Claims" asp-action="Create" asp-route-itemId="@Model.ItemId" class="btn btn-primary w-100 mb-2 btn-lg">
+                            <i class="fas fa-hand-holding me-2"></i>المطالبة بالغرض
+                        </a>
+                        <div class="safety-tip mb-2">
+                            <i class="fas fa-shield-alt"></i>
+                            <div>المطالبة هتتراجع من قبل صاحب البلاغ عشان يتأكد إنك فعلاً صاحب الغرض.</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <button class="btn btn-success w-100 mb-2 btn-lg" onclick="openContactModal()"><i class="fas fa-comments me-2"></i>تواصل مع الفاقد</button>
+                    }
+
                     <a asp-controller="Items" asp-action="Browse" class="btn btn-outline-secondary w-100"><i class="fas fa-list me-2"></i>عرض مشابهة</a>
                 </div>
 
@@ -107,12 +134,12 @@
 
                 <div class="detail-card">
                     <h5><i class="fas fa-layer-group me-2 text-primary"></i>بلاغات مشابهة</h5>
-                    @for(int i = 0; i < 3; i++)
+                    @for (int i = 0; i < 3; i++)
                     {
-                       <div class="d-flex gap-2 mb-3 align-items-start" style="cursor:pointer">
+                        <div class="d-flex gap-2 mb-3 align-items-start" style="cursor:pointer">
                             <img src="@(string.IsNullOrEmpty(Model.ImageBase64)
-                                     ? "/images/no-image.png"
-                                     : Model.ImageBase64)"
+                                                                      ? "/images/no-image.png"
+                                                                      : Model.ImageBase64)"
                              class="item-card-img" style="width:55px;height:55px;object-fit:cover;border-radius:8px;flex-shrink:0" />
                         <div>
                             <div class="fw-bold small">@Model.Title</div>
@@ -121,222 +148,56 @@
                                 @Model.Status
                             </span>
                         </div>
-                    </div>  
-                    }
-
-                </div>
-            </div>
-        </div>
-    </div> 
-    </section> 
-
-    <!-- Claim Modal -->
-     <div class="modal fade" id="claimModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title"><i class="fas fa-hand-holding me-2"></i>المطالبة بالغرض</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="claimStep1">
-                        <p class="text-muted small mb-3">يجب الإجابة على أسئلة التحقق لإثبات ملكيتك للغرض.</p>
-                        <div id="verificationQuestions"></div>
-                        <div id="claimMsg" class="mt-2"></div>
                     </div>
-                    <div id="claimStep2" style="display:none" class="text-center py-3">
-                        <div class="mb-3" style="font-size:4rem">✅</div>
-                        <h5 class="text-success fw-bold">تم التحقق بنجاح!</h5>
-                        <p class="text-muted">إجاباتك مطابقة لأسئلة صاحب البلاغ. تقدر تفتح محادثة آمنة مع الواجد دلوقتي.</p>
-                        <a href="messages.html" class="btn btn-success"><i class="fas fa-comments me-1"></i>فتح المحادثة</a>
-                    </div>
-                </div>
-                <div class="modal-footer" id="claimFooter">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="button" class="btn btn-primary" onclick="verifyClaim()"><i class="fas fa-check me-1"></i>تحقق وأرسل</button>
+                                        }
+
                 </div>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Contact Modal -->
-    <div class="modal fade" id="contactModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title"><i class="fas fa-comments me-2"></i>تواصل مع الناشر</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="contactInfo"></div>
-                    <div class="safety-tip mt-3">
-                        <i class="fas fa-shield-alt"></i>
-                        <div>تأكد دايماً من هوية الشخص قبل التسليم أو الاستلام. افضل تلتقي في مكان عام.</div>
+<!-- Contact Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-comments me-2"></i>تواصل مع الناشر</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="contactInfo">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div style="width:55px;height:55px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--primary);flex-shrink:0">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">@Model.User.FullName</div>
+                            <div class="small text-muted">@Model.City</div>
+                        </div>
                     </div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fas fa-phone text-success"></i>
+                        <strong>@Model.User.Phone</strong>
+                    </div>
+                    <a href="tel:@Model.User.Phone" class="btn btn-outline-success w-100 mb-2"><i class="fas fa-phone me-1"></i>اتصل الآن</a>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                    <a href="messages.html" class="btn btn-success"><i class="fas fa-comments me-1"></i>فتح المحادثة</a>
+                <div class="safety-tip mt-3">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>تأكد دايماً من هوية الشخص قبل التسليم أو الاستلام. افضل تلتقي في مكان عام.</div>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <a asp-controller="Messages" asp-action="Index" class="btn btn-success"><i class="fas fa-comments me-1"></i>فتح المحادثة</a>
             </div>
         </div>
     </div>
+</div>
 
-
-
-    @* <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="data.js"></script>
-    <script>
-        let currentItem = null;
-
-        function loadItem() {
-          const id = parseInt(new URLSearchParams(location.search).get('id'));
-          currentItem = getAllItems().find(i => i.id === id);
-
-          if (!currentItem) {
-            document.getElementById('detailsContainer').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-circle"></i><h5>البلاغ مش موجود</h5><a asp-controller="Items" asp=action="Browse" class="btn btn-primary mt-2">العودة للتصفح</a></div>';
-            return;
-          }
-
-          document.getElementById('breadTitle').textContent = currentItem.title;
-          document.title = currentItem.title + ' – لقيت';
-
-          const isFound = currentItem.status === 'found';
-          const relatedItems = getAllItems().filter(i => i.id !== currentItem.id && (i.category === currentItem.category || i.city === currentItem.city)).slice(0, 3);
-
-          document.getElementById('detailsContainer').innerHTML = `
-            <div class="row g-4">
-              <div class="col-lg-8">
-                <img src="${safeUrl(currentItem.image)}" class="details-img mb-3" alt="${escapeHtml(currentItem.title)}" />
-
-                <div class="detail-card">
-                  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-                    <h3 class="fw-bold mb-0">${escapeHtml(currentItem.title)}</h3>
-                    ${getStatusBadge(currentItem.status)}
-                  </div>
-                  <p style="color:var(--gray);line-height:1.8">${escapeHtml(currentItem.description)}</p>
-
-                  <div class="info-row"><span class="label"><i class="fas fa-tag me-1"></i> الفئة</span><span class="value">${escapeHtml(currentItem.category)}</span></div>
-                  <div class="info-row"><span class="label"><i class="fas fa-map-marker-alt me-1"></i> المدينة</span><span class="value">${escapeHtml(currentItem.city)}</span></div>
-                  <div class="info-row"><span class="label"><i class="fas fa-location-arrow me-1"></i> الموقع</span><span class="value">${escapeHtml(currentItem.location)}</span></div>
-                  <div class="info-row"><span class="label"><i class="fas fa-calendar me-1"></i> التاريخ</span><span class="value">${formatDate(currentItem.date)}</span></div>
-                  <div class="info-row"><span class="label"><i class="fas fa-user me-1"></i> نشر بواسطة</span><span class="value">${escapeHtml(currentItem.postedBy)}</span></div>
-                  ${currentItem.verified ? '<div class="info-row"><span class="label"><i class="fas fa-shield-alt me-1"></i> التحقق</span><span class="value text-success"><i class="fas fa-check-circle me-1"></i>موثّق</span></div>' : ''}
-                </div>
-
-                <div class="safety-tip mb-3">
-                  <i class="fas fa-exclamation-triangle fa-lg"></i>
-                  <div>
-                    <strong>نصيحة أمان:</strong> دايماً التقِ في مكان عام، وتأكد من هوية الشخص. لو حسيت بأي خطر أو شك، بلّغ الشرطة.
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-lg-4">
-                <div class="detail-card">
-                  <h5><i class="fas fa-bolt me-2 text-warning"></i>إجراءات</h5>
-                  ${isFound ? `
-                    <button class="btn btn-primary w-100 mb-2 btn-lg" onclick="openClaimModal()"><i class="fas fa-hand-holding me-2"></i>المطالبة بالغرض</button>
-                    <div class="safety-tip mb-2">
-                      <i class="fas fa-shield-alt"></i>
-                      <div>المحادثة بتتفتح بعد إجابة أسئلة التحقق بنجاح، عشان الواجد وصاحب الغرض يبقوا متأكدين من بعض.</div>
-                    </div>
-                  ` : `
-                    <button class="btn btn-success w-100 mb-2 btn-lg" onclick="openContactModal()"><i class="fas fa-comments me-2"></i>تواصل مع الفاقد</button>
-                  `}
-                  <a asp-controller="Items" asp=action="Browse" class="btn btn-outline-secondary w-100"><i class="fas fa-list me-2"></i>عرض مشابهة</a>
-                </div>
-
-                <div class="detail-card">
-                  <h5><i class="fas fa-shield-alt me-2 text-success"></i>نصائح السلامة</h5>
-                  <ul class="list-unstyled small" style="color:var(--gray)">
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>التقِ في مكان عام ومضاء</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>أخذ معك شخص تاني</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>تحقق من هوية الشخص</li>
-                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>بلّغ عن أي سلوك مشبوه</li>
-                  </ul>
-                </div>
-
-                ${relatedItems.length ? `
-                <div class="detail-card">
-                  <h5><i class="fas fa-layer-group me-2 text-primary"></i>بلاغات مشابهة</h5>
-                  ${relatedItems.map(r => `
-                    <div class="d-flex gap-2 mb-3 align-items-start" style="cursor:pointer" onclick="window.location='details.html?id=${r.id}'">
-                      <img src="${safeUrl(r.image)}" style="width:55px;height:55px;object-fit:cover;border-radius:8px;flex-shrink:0" />
-                      <div>
-                        <div class="fw-bold small">${escapeHtml(r.title)}</div>
-                        <div class="small text-muted">${escapeHtml(r.city)}</div>
-                        ${getStatusBadge(r.status)}
-                      </div>
-                    </div>
-                  `).join('')}
-                </div>` : ''}
-              </div>
-            </div>
-          `;
-        }
-
-        function openClaimModal() {
-          if (!currentItem.verificationQuestions || !currentItem.verificationQuestions.length) {
-            document.getElementById('verificationQuestions').innerHTML = '<p class="text-muted">لا توجد أسئلة تحقق لهذا البلاغ. سيتم إرسال مطالبتك مباشرة.</p>';
-          } else {
-            document.getElementById('verificationQuestions').innerHTML = currentItem.verificationQuestions.map((q, i) => `
-              <div class="mb-3">
-                <label class="form-label fw-bold">سؤال ${i+1}: ${escapeHtml(q.question)}</label>
-                <input type="text" class="form-control" id="vq${i}" placeholder="اكتب إجابتك..." />
-              </div>
-            `).join('');
-          }
-          document.getElementById('claimStep1').style.display = '';
-          document.getElementById('claimStep2').style.display = 'none';
-          document.getElementById('claimFooter').style.display = '';
-          document.getElementById('claimMsg').innerHTML = '';
-          new bootstrap.Modal(document.getElementById('claimModal')).show();
-        }
-
-        function verifyClaim() {
-          const qs = currentItem.verificationQuestions || [];
-          if (!qs.length) {
-            showSuccess(); return;
-          }
-          let allCorrect = true;
-          qs.forEach((q, i) => {
-            const val = (document.getElementById('vq' + i)?.value || '').trim().toLowerCase();
-            if (val !== q.answer.toLowerCase()) allCorrect = false;
-          });
-
-          if (allCorrect) {
-            showSuccess();
-          } else {
-            document.getElementById('claimMsg').innerHTML = '<div class="alert alert-danger small"><i class="fas fa-times-circle me-1"></i>إجاباتك غلط. حاول تاني.</div>';
-          }
-        } *@
-
-    @*     // function showSuccess() {
-        //   document.getElementById('claimStep1').style.display = 'none';
-        //   document.getElementById('claimStep2').style.display = '';
-        //   document.getElementById('claimFooter').style.display = 'none';
-        // }
-
-        // function openContactModal() {
-        //   document.getElementById('contactInfo').innerHTML = `
-        //     <div class="d-flex align-items-center gap-3 mb-3">
-        //       <div style="width:55px;height:55px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--primary);flex-shrink:0">
-        //         <i class="fas fa-user"></i>
-        //       </div>
-        //       <div>
-        //         <div class="fw-bold">${escapeHtml(currentItem.postedBy)}</div>
-        //         <div class="small text-muted">${escapeHtml(currentItem.city)}</div>
-        //       </div>
-        //     </div>
-        //     <div class="d-flex align-items-center gap-2 mb-2">
-        //       <i class="fas fa-phone text-success"></i>
-        //       <strong>${escapeHtml(currentItem.contact)}</strong>
-        //     </div>
-        //     <a href="tel:${safePhone(currentItem.contact)}" class="btn btn-outline-success w-100 mb-2"><i class="fas fa-phone me-1"></i>اتصل الآن</a>
-        //   `;
-        //   new bootstrap.Modal(document.getElementById('contactModal')).show();
-        // }
-
-        // document.addEventListener('DOMContentLoaded', loadItem);
-    </script> *@
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function openContactModal() {
+        new bootstrap.Modal(document.getElementById('contactModal')).show();
+    }
+</script>

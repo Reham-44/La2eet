@@ -8,7 +8,7 @@ using System.IO;
 
 namespace LostAndFound.Controllers
 {
-    //[Authorize(Roles="ADMIN")]
+    [Authorize(Roles="ADMIN")]
     public class AdminController : Controller
     {
         private readonly LostAndFoundDbContext _context;

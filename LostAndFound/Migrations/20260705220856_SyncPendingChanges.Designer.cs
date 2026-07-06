@@ -4,6 +4,7 @@ using LostAndFound.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LostAndFound.Migrations
 {
     [DbContext(typeof(LostAndFoundDbContext))]
-    partial class LostAndFoundDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260705220856_SyncPendingChanges")]
+    partial class SyncPendingChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,9 +191,6 @@ namespace LostAndFound.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("IsBanned")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsVerified")
                         .ValueGeneratedOnAdd()

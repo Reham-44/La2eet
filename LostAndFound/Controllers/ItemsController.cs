@@ -1,6 +1,7 @@
 using LostAndFound.DbContexts;
 using LostAndFound.Enums;
 using LostAndFound.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -75,7 +76,7 @@ namespace LostAndFound.Controllers
             }
             return View(item);
         }
-
+        [Authorize]
         [HttpPost]
         public IActionResult Create(Item item,ICollection<VerificationQuestion> questions)
         {
@@ -85,7 +86,8 @@ namespace LostAndFound.Controllers
                 string base64 = Convert.ToBase64String(ms.ToArray());
                     item.ImageBase64 = $"data:{item.ImageFile.ContentType};base64,{base64}";
                                    } }
-            item.UserId = 3;
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            item.UserId = int.Parse(userIdClaim!);
             item.ReportStatus = ReportStatus.Pending;
             //if (!ModelState.IsValid)
             //{

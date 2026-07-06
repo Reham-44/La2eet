@@ -1,23 +1,21 @@
 ﻿using LostAndFound.Enums;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LostAndFound.Models
 {
-    public class User
+    // Email, UserName, PasswordHash, PhoneNumber, EmailConfirmed, ...
+    public class User : IdentityUser<int>
     {
-        public int UserId { get; set; }
-        public string FullName { get; set; }
-        public string Email { get; set; }
-        public string PasswordHash { get; set; }
-        public string Phone { get; set; }
+        public string FullName { get; set; } = string.Empty;
+
+        public string Phone { get; set; } = string.Empty;
+
         public bool IsVerified { get; set; }
-        public bool IsBanned { get; set; } = false;
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public Role Role { get; set; }
+        public bool IsBanned { get; set; } = false;
 
         public ICollection<Item> Items { get; set; } = new List<Item>();
         public ICollection<Claim> Claims { get; set; } = new List<Claim>();
