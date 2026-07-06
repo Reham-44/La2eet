@@ -55,7 +55,7 @@
                     <div class="info-row"><span class="label"><i class="fas fa-location-arrow me-1"></i> الموقع</span><span class="value">@Model.Location</span></div>
                     <div class="info-row"><span class="label"><i class="fas fa-calendar me-1"></i> التاريخ</span><span class="value">@Model.LostOrFoundDate</span></div>
                     <div class="info-row"><span class="label"><i class="fas fa-user me-1"></i> نشر بواسطة</span><span class="value">@Model.User.FullName</span></div>
-                      @if(User.IsInRole("ADMIN"))
+                      @if(User.IsInRole("Admin"))
                       {
 
                         @if (Model.User != null && Model.User.IsBanned)
