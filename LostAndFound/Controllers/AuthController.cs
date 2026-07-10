@@ -31,6 +31,7 @@ namespace LostAndFound.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            // اتأكد الأول إن الحساب مش محظور قبل ما نحاول نعمله Sign In
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null && existingUser.IsBanned)
             {
@@ -103,6 +104,86 @@ namespace LostAndFound.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        // GET: /Auth/ForgotPassword
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View(new ForgotPasswordViewModel());
+        }
+
+        // POST: /Auth/ForgotPassword
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            // ملاحظة أمنية: منقولش "الإيميل مش موجود" عشان محدش يقدر يتأكد
+            // مين اليوزرز المسجلين عن طريق تجربة إيميلات عشوائية
+            if (user == null)
+            {
+                ViewBag.Message = "لو الإيميل ده مسجل عندنا، هيوصلك رابط إعادة تعيين كلمة المرور.";
+                return View("ForgotPasswordConfirmation");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var resetLink = Url.Action("ResetPassword", "Auth",
+                new { email = model.Email, token = token }, protocol: Request.Scheme);
+
+            // TODO: لما يبقى عندك خدمة إيميل حقيقية (SMTP/SendGrid)،
+            // ابعت resetLink بدل ما تعرضه على الشاشة، وامسح الـ ViewBag.ResetLink من View التأكيد
+            ViewBag.ResetLink = resetLink;
+
+            return View("ForgotPasswordConfirmation");
+        }
+
+        // GET: /Auth/ResetPassword
+        [HttpGet]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
+                return RedirectToAction(nameof(Login));
+
+            var model = new ResetPasswordViewModel { Email = email, Token = token };
+            return View(model);
+        }
+
+        // POST: /Auth/ResetPassword
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // منورّيش السبب الحقيقي، بس نوجهه كإنه نجح عشان أمان الحسابات
+                return RedirectToAction(nameof(ResetPasswordConfirmation));
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
+
+                return View(model);
+            }
+
+            return RedirectToAction(nameof(ResetPasswordConfirmation));
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
         }
     }
 }
