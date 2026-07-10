@@ -1,6 +1,7 @@
 ﻿using LostAndFound.DbContexts;
 using LostAndFound.Enums;
 using LostAndFound.Models;
+using LostAndFound.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

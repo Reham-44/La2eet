@@ -1,4 +1,5 @@
-@model LostAndFound.Models.ClaimsIndexViewModel
+@using LostAndFound.Models.ViewModels
+@model ClaimsIndexViewModel
 @{
     ViewData["Title"] = "المطالبات - لقيت";
     Layout = null;
@@ -29,7 +30,6 @@
                     <li class="nav-item"><a class="nav-link" asp-controller="Browse" asp-action="Index"><i class="fas fa-list me-1"></i> تصفح</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Messages" asp-action="Index"><i class="fas fa-comments me-1"></i> الرسائل</a></li>
                     <li class="nav-item"><a class="nav-link active" asp-controller="Claims" asp-action="Index"><i class="fas fa-hand-holding me-1"></i> مطالباتي</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Index"><i class="fas fa-chart-bar me-1"></i> الإدارة</a></li>
                 </ul>
                 <div class="d-flex align-items-center gap-2">
                     <a asp-controller="Profile" asp-action="Index" class="btn btn-outline-light btn-sm"><i class="fas fa-user me-1"></i> حسابي</a>
@@ -92,6 +92,21 @@
                                 }
                                 <span class="badge bg-@css">@label</span>
                                 <a asp-controller="Items" asp-action="Details" asp-route-id="@c.ItemId" class="btn btn-sm btn-outline-primary">عرض</a>
+                                @if (c.ClaimStatus == ClaimStatus.Approved && !c.Item.IsResolved)
+                                {
+                                        <a asp-controller="Messages"
+       asp-action="Index"
+       asp-route-itemId="@c.ItemId"
+                                       asp-route-receiverId="@c.Item.UserId"
+       class="btn btn-primary">
+        فتح المحادثة
+    </a>
+                                }
+                                else
+                                {
+                                 <span class="badge bg-primary">رجعت لصاحبها</span>
+
+                                }
                             </div>
                         }
                     }
@@ -132,9 +147,24 @@
                                         </form>
                                     </div>
                                 }
-                                else if (c.ClaimStatus == LostAndFound.Enums.ClaimStatus.Approved)
+                                else if (c.ClaimStatus == ClaimStatus.Approved)
                                 {
                                     <span class="badge bg-success">تم القبول</span>
+                                    if (!c.Item.IsResolved)
+                                    {
+                                        <a asp-controller="Messages"
+                                        asp-action="Index"
+                                        asp-route-itemId="@c.ItemId"
+                                        asp-route-receiverId="@c.UserId"
+                                        class="btn btn-primary">
+                                            فتح المحادثة
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary">رجعت لصاحبها</span>
+
+                                    }
                                 }
                                 else
                                 {

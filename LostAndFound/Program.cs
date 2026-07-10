@@ -1,6 +1,9 @@
 ﻿using LostAndFound;
 using LostAndFound.DbContexts;
+using LostAndFound.Hubs;
 using LostAndFound.Models;
+using LostAndFound.Repositories;
+using LostAndFound.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,37 +12,30 @@ using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// إضافة DbContext مع Identity
 builder.Services.AddDbContext<LostAndFoundDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// إضافة Identity مع دعم الأدوار
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
-    // إعدادات كلمة المرور
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 8;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
 
-    // إعدادات المستخدم
     options.User.RequireUniqueEmail = true;
     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
 
-    // إعدادات القفل
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.AllowedForNewUsers = true;
 
-    // إعدادات الـ SignIn
     options.SignIn.RequireConfirmedEmail = false;
     options.SignIn.RequireConfirmedPhoneNumber = false;
 })
 .AddEntityFrameworkStores<LostAndFoundDbContext>()
 .AddDefaultTokenProviders();
 
-// إضافة الـ Authentication Cookies
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.HttpOnly = true;
@@ -52,19 +48,18 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
-
-
+builder.Services.AddSignalR();
+builder.Services.AddScoped<ChatRepository>();
+builder.Services.AddScoped<ChatService>();
 
 var app = builder.Build();
 
-// تهيئة الأدوار والمستخدمين تلقائياً
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await SeedData.Initialize(services);
 }
 
-// باقي تكوين الـ Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -74,13 +69,13 @@ else
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthentication(); // مهم جداً
+app.UseAuthentication();
 app.UseAuthorization();
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllerRoute(
     name: "default",

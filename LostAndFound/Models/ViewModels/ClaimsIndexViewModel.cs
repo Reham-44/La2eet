@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LostAndFound.Models
+namespace LostAndFound.Models.ViewModels
 {
     public class ClaimsIndexViewModel
     {
