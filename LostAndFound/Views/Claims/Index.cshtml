@@ -2,9 +2,8 @@
 @model ClaimsIndexViewModel
 @{
     ViewData["Title"] = "المطالبات - لقيت";
-    Layout = null;
 }
-
+@* 
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -16,9 +15,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/styles.css" />
 </head>
-<body>
+<body> *@
 
-    <nav class="navbar navbar-expand-lg navbar-laqeet">
+  @*   <nav class="navbar navbar-expand-lg navbar-laqeet">
         <div class="container">
             <a class="navbar-brand" asp-controller="Home" asp-action="Index"><i class="fas fa-search-location me-2"></i>ل<span>قيت</span></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
@@ -37,7 +36,7 @@
                 </div>
             </div>
         </div>
-    </nav>
+    </nav> *@
 
     <div class="browse-header">
         <div class="container">
@@ -92,21 +91,23 @@
                                 }
                                 <span class="badge bg-@css">@label</span>
                                 <a asp-controller="Items" asp-action="Details" asp-route-id="@c.ItemId" class="btn btn-sm btn-outline-primary">عرض</a>
-                                @if (c.ClaimStatus == ClaimStatus.Approved && !c.Item.IsResolved)
-                                {
-                                        <a asp-controller="Messages"
-       asp-action="Index"
-       asp-route-itemId="@c.ItemId"
-                                       asp-route-receiverId="@c.Item.UserId"
-       class="btn btn-primary">
-        فتح المحادثة
-    </a>
-                                }
-                                else
-                                {
-                                 <span class="badge bg-primary">رجعت لصاحبها</span>
-
-                                }
+                               @if (c.ClaimStatus == ClaimStatus.Approved)
+{
+    if (!c.Item.IsResolved)
+    {
+        <a asp-controller="Messages"
+           asp-action="Index"
+           asp-route-itemId="@c.ItemId"
+           asp-route-receiverId="@c.Item.UserId"
+           class="btn btn-primary">
+            فتح المحادثة
+        </a>
+    }
+    else
+    {
+        <span class="badge bg-primary">رجعت لصاحبها</span>
+    }
+}
                             </div>
                         }
                     }
@@ -147,25 +148,25 @@
                                         </form>
                                     </div>
                                 }
-                                else if (c.ClaimStatus == ClaimStatus.Approved)
-                                {
-                                    <span class="badge bg-success">تم القبول</span>
-                                    if (!c.Item.IsResolved)
-                                    {
-                                        <a asp-controller="Messages"
-                                        asp-action="Index"
-                                        asp-route-itemId="@c.ItemId"
-                                        asp-route-receiverId="@c.UserId"
-                                        class="btn btn-primary">
-                                            فتح المحادثة
-                                        </a>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-primary">رجعت لصاحبها</span>
+                               else if (c.ClaimStatus == ClaimStatus.Approved)
+{
+    <span class="badge bg-success">تم القبول</span>
 
-                                    }
-                                }
+    @if (!c.Item.IsResolved)
+    {
+        <a asp-controller="Messages"
+           asp-action="Index"
+           asp-route-itemId="@c.ItemId"
+           asp-route-receiverId="@c.UserId"
+           class="btn btn-primary">
+            فتح المحادثة
+        </a>
+    }
+    else
+    {
+        <span class="badge bg-primary">رجعت لصاحبها</span>
+    }
+}
                                 else
                                 {
                                     <span class="badge bg-danger">مرفوض</span>
@@ -177,7 +178,7 @@
             </div>
         </div>
     </section>
-
+@* 
     <footer class="footer mt-4">
         <div class="container">
             <div class="row g-3">
@@ -192,4 +193,4 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html> *@

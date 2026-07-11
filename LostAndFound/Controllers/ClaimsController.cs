@@ -24,7 +24,6 @@ namespace LostAndFound.Controllers
             _userManager = userManager;
         }
 
-        // GET: /Claims
         public async Task<IActionResult> Index()
         {
             var currentUser = await _userManager.GetUserAsync(User);

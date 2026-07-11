@@ -27,12 +27,40 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link @active("Home")" href="@Url.Action("Index", "Home")"><i class="fas fa-home me-1"></i> الرئيسية</a></li>
                     <li class="nav-item"><a class="nav-link @active("Items")" href="@Url.Action("Browse", "Items")"><i class="fas fa-list me-1"></i> تصفح</a></li>
-                    <li class="nav-item"><a class="nav-link @active("Messages")" href="@Url.Action("Index", "Messages")"><i class="fas fa-comments me-1"></i> الرسائل</a></li>
-                    <li class="nav-item"><a class="nav-link @active("Claims")" href="@Url.Action("Index", "Claims")"><i class="fas fa-hand-holding me-1"></i> مطالباتي</a></li>
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item"><a class="nav-link @active("Messages")" href="@Url.Action("Index", "Messages")"><i class="fas fa-comments me-1"></i> الرسائل</a></li>
+                        <li class="nav-item"><a class="nav-link @active("Claims")" href="@Url.Action("Index", "Claims")"><i class="fas fa-hand-holding me-1"></i> مطالباتي</a></li>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item"><a class="nav-link @active("Admin")" href="@Url.Action("Index", "Admin")"><i class="fas fa-chart-bar me-1"></i> الإدارة</a></li>
+                        }
+                    }
                 </ul>
                 <div class="d-flex align-items-center gap-2">
-                    <a href="@Url.Action("Profile", "Users")" class="btn btn-outline-light btn-sm"><i class="fas fa-user me-1"></i> حسابي</a>
-                    <a href="@Url.Action("Create", "Items")" class="btn btn-post"><i class="fas fa-plus me-1"></i> أضف بلاغ</a>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <a href="@Url.Action("Profile", "Users")" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-user me-1"></i> @User.Identity.Name
+                        </a>
+                        <a href="@Url.Action("Create", "Items")" class="btn btn-post"><i class="fas fa-plus me-1"></i> أضف بلاغ</a>
+                        <form method="post" action="@Url.Action("Logout", "Auth")" class="m-0">
+                            <button type="submit" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-sign-out-alt me-1"></i> خروج
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Login", "Auth")" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-sign-in-alt me-1"></i> تسجيل الدخول
+                        </a>
+                        <a href="@Url.Action("Register", "Auth")" class="btn btn-post">
+                            <i class="fas fa-user-plus me-1"></i> إنشاء حساب
+                        </a>
+                    }
                 </div>
             </div>
         </div>

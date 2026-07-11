@@ -12,27 +12,6 @@ namespace LostAndFound.Services
         {
             repo = _repo;
         }
-
-        //public ChatPageVM GetMessagesPage(int currentUserId, int itemId, int receiverId)
-        //{
-        //    var chats = repo.GetChats(currentUserId);
-
-        //    if (!chats.Any() && itemId != 0 && receiverId != 0)
-        //    {
-        //        chats.Add(new ChatVM
-        //        {
-        //            ItemId = itemId,
-
-        //            OtherUserId = receiverId,
-
-        //            OtherUserName = repo.GetUserName(receiverId),
-
-        //            ItemTitle = repo.GetItemTitle(itemId),
-
-        //            Messages = new List<MessageVM>()
-        //        });
-        //    }
-
         public ChatPageVM GetMessagesPage(
           int currentUserId,
           int? itemId,

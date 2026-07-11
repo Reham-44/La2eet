@@ -58,6 +58,7 @@ namespace LostAndFound.Controllers
 
             return View(item);
         }
+        [Authorize]
         [HttpGet]
         public IActionResult Create([FromQuery]string? type)
         {
