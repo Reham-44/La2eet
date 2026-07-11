@@ -1,7 +1,9 @@
+using DocumentFormat.OpenXml.InkML;
 using LostAndFound.DbContexts;
 using LostAndFound.Enums;
 using LostAndFound.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,11 +11,15 @@ namespace LostAndFound.Controllers
 {
     public class ItemsController : Controller
     {
-        LostAndFoundDbContext context;
-        public ItemsController(LostAndFoundDbContext _context)
+        private readonly LostAndFoundDbContext context;
+        private readonly UserManager<User> userManager;
+
+        public ItemsController(
+            LostAndFoundDbContext _context,
+            UserManager<User> _userManager)
         {
             context = _context;
-
+            userManager = _userManager;
         }
         public IActionResult Browse(string? search, ItemType? statusFilter, City? cityFilter, DateTime? dateFrom, DateTime? dateTo)
         {
@@ -50,14 +56,33 @@ namespace LostAndFound.Controllers
             return View(filteredItems);
         }
         
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             var item = context.Items
                 .Include(u =>u.User)
                 .FirstOrDefault(d=>d.ItemId==id);
+            if (item == null)
+                return NotFound();
 
+            ViewBag.AlreadyClaimed = false;
+
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                var currentUser = await userManager.GetUserAsync(User);
+
+                if (currentUser != null)
+                {
+                    ViewBag.AlreadyClaimed = context.Claims.Any(c =>
+                        c.ItemId == id &&
+                        c.UserId == currentUser.Id);
+                }
+            }
+            ViewBag.AlreadyClaimed = false;
+            
             return View(item);
         }
+
+
         [Authorize]
         [HttpGet]
         public IActionResult Create([FromQuery]string? type)

@@ -61,7 +61,6 @@ namespace LostAndFound.Controllers
             return View();
         }
 
-        // POST: /Claims/Create
         [HttpPost]
         [ActionName("Create")]
         public async Task<IActionResult> CreatePost(int itemId)
@@ -81,8 +80,16 @@ namespace LostAndFound.Controllers
                 ViewBag.Error = "لا يمكنك المطالبة بغرض قمت أنت بالإبلاغ عنه";
                 return View();
             }
+            var alreadyClaimed = _context.Claims.Any(c =>
+    c.ItemId == itemId &&
+    c.UserId == currentUser.Id);
 
-            // اجمع إجابات كل سؤال تحقق مرتبط بالغرض ده
+            if (alreadyClaimed)
+            {
+                TempData["Error"] = "لقد قمت بإرسال مطالبة لهذا الغرض بالفعل.";
+                return RedirectToAction(nameof(Index));
+            }
+
             var answerParts = new System.Collections.Generic.List<string>();
             bool hasEmptyAnswer = false;
 

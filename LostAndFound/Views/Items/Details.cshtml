@@ -94,7 +94,9 @@
                         : null;
                         bool isOwner = currentUserId != null && Model.UserId.ToString() == currentUserId;
                     }
-
+                    @{
+                        bool alreadyClaimed = ViewBag.AlreadyClaimed ?? false;
+                    }
                     @if (isOwner)
                     {
                         <div class="alert alert-info small mb-2">
@@ -106,9 +108,30 @@
                     }
                     else if (Model.Status == ItemType.Found)
                     {
-                        <a asp-controller="Claims" asp-action="Create" asp-route-itemId="@Model.ItemId" class="btn btn-primary w-100 mb-2 btn-lg">
-                            <i class="fas fa-hand-holding me-2"></i>المطالبة بالغرض
-                        </a>
+                        @if (Model.IsResolved)
+                        {
+                            <button class="btn btn-success w-100 mb-2 btn-lg" disabled>
+                                <i class="fas fa-check-circle me-2"></i>
+                                تم استرجاع الغرض
+                            </button>
+                        }
+                        else if (alreadyClaimed)
+                        {
+                            <button class="btn btn-secondary w-100 mb-2 btn-lg" disabled>
+                                <i class="fas fa-check me-2"></i>
+                                تم إرسال مطالبتك بالفعل
+                            </button>
+                        }
+                        else
+                        {
+                            <a asp-controller="Claims"
+                               asp-action="Create"
+                               asp-route-itemId="@Model.ItemId"
+                               class="btn btn-primary w-100 mb-2 btn-lg">
+                                <i class="fas fa-hand-holding me-2"></i>
+                                المطالبة بالغرض
+                            </a>
+                        }
                         <div class="safety-tip mb-2">
                             <i class="fas fa-shield-alt"></i>
                             <div>المطالبة هتتراجع من قبل صاحب البلاغ عشان يتأكد إنك فعلاً صاحب الغرض.</div>
