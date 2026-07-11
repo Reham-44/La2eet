@@ -46,5 +46,54 @@ namespace LostAndFound.Controllers
 
             return View(viewModel);
         }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Edit()
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdString == null)
+                return Unauthorized();
+
+            int userId = int.Parse(userIdString);
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+                return NotFound();
+
+            var viewModel = new EditProfileViewModel
+            {
+                FullName = user.FullName,
+                Phone = user.Phone
+            };
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdString == null)
+                return Unauthorized();
+
+            int userId = int.Parse(userIdString);
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+                return NotFound();
+
+            user.FullName = model.FullName;
+            user.Phone = model.Phone;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Profile");
+        }
     }
 }
