@@ -1,4 +1,5 @@
-﻿using LostAndFound.Enums;
+﻿using DocumentFormat.OpenXml.InkML;
+using LostAndFound.Enums;
 using LostAndFound.Models;
 using LostAndFound.Models.ViewModels;
 using LostAndFound.Repositories;
@@ -13,6 +14,7 @@ namespace LostAndFound.Services
         public City? CityFilter { get; set; }
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
+        public string? SortOrder { get; set; }
     }
 
     public class CreateItemResult
@@ -56,8 +58,16 @@ namespace LostAndFound.Services
                 var to = DateOnly.FromDateTime(filter.DateTo.Value);
                 query = query.Where(i => i.LostOrFoundDate <= to);
             }
+            if (filter.SortOrder == "oldest")
+            {
+                query = query.OrderBy(i => i.LostOrFoundDate);
+            }
+            else
+            {
+                query = query.OrderByDescending(i => i.LostOrFoundDate);
+            }
 
-            return query.OrderByDescending(i => i.CreatedAt).ToList();
+            return query.ToList();
         }
 
         public Item? GetItemDetails(int id)
@@ -77,7 +87,7 @@ namespace LostAndFound.Services
             return itemRepository.HasUserClaimedItem(itemId, currentUser.Id);
         }
 
-        // بقت الميثود دي بتستقبل ViewModel مش Item مباشرة
+
         public CreateItemResult CreateItem(ItemViewModel model, int userId)
         {
             List<VerificationQuestion> validQuestions = new();
@@ -103,7 +113,7 @@ namespace LostAndFound.Services
                 }
             }
 
-            // تحويل الـ ViewModel لـ Entity
+
             var item = new Item
             {
                 Title = model.Title,
@@ -137,6 +147,16 @@ namespace LostAndFound.Services
             }
 
             return new CreateItemResult { Success = true };
+        }
+
+        public List<Item> GetSimilarItems(int itemId)
+        {
+            var item = itemRepository.GetById(itemId);
+
+            if (item == null)
+                return new List<Item>();
+
+            return itemRepository.GetSimilarItems(item);
         }
     }
 }
