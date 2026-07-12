@@ -50,6 +50,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
 builder.Services.AddScoped<ChatRepository>();
 builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<ItemRepository>();
+builder.Services.AddScoped<ItemService>();
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
     {

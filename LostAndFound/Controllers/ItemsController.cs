@@ -1,140 +1,80 @@
-using DocumentFormat.OpenXml.InkML;
-using LostAndFound.DbContexts;
 using LostAndFound.Enums;
-using LostAndFound.Models;
+using LostAndFound.Models.ViewModels;
+using LostAndFound.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LostAndFound.Controllers
 {
     public class ItemsController : Controller
     {
-        private readonly LostAndFoundDbContext context;
-        private readonly UserManager<User> userManager;
+        private readonly ItemService itemService;
 
-        public ItemsController(
-            LostAndFoundDbContext _context,
-            UserManager<User> _userManager)
+        public ItemsController(ItemService _itemService)
         {
-            context = _context;
-            userManager = _userManager;
+            itemService = _itemService;
         }
+
         public IActionResult Browse(string? search, ItemType? statusFilter, City? cityFilter, DateTime? dateFrom, DateTime? dateTo)
         {
-            var query = context.Items.Where(i => i.ReportStatus == ReportStatus.Approved && i.User.IsBanned ==false)
-                                     .AsQueryable();
-
-            if (!string.IsNullOrEmpty(search))
+            var filter = new ItemFilter
             {
-                query = query.Where(i => i.Title.Contains(search) || i.Description.Contains(search));
-            }
+                Search = search,
+                StatusFilter = statusFilter,
+                CityFilter = cityFilter,
+                DateFrom = dateFrom,
+                DateTo = dateTo
+            };
 
-            if (statusFilter.HasValue)
-            {
-                query = query.Where(i => i.Status == statusFilter.Value);
-            }
-
-            if (cityFilter.HasValue)
-            {
-                query = query.Where(i => i.City == cityFilter.Value);
-            }
-
-            if (dateFrom.HasValue)
-            {
-                var from = DateOnly.FromDateTime(dateFrom.Value);
-                query = query.Where(i => i.LostOrFoundDate >= from);
-            }
-            if (dateTo.HasValue)
-            {
-                var to = DateOnly.FromDateTime(dateTo.Value);
-                query = query.Where(i => i.LostOrFoundDate <= to);
-            }
-
-            var filteredItems = query.OrderByDescending(i => i.CreatedAt).ToList();
-            return View(filteredItems);
+            return View(itemService.Browse(filter));
         }
-        
+
         public async Task<IActionResult> Details(int id)
         {
-            var item = context.Items
-                .Include(u =>u.User)
-                .FirstOrDefault(d=>d.ItemId==id);
+            var item = itemService.GetItemDetails(id);
             if (item == null)
                 return NotFound();
 
-            ViewBag.AlreadyClaimed = false;
+            ViewBag.AlreadyClaimed = await itemService.IsAlreadyClaimedByCurrentUserAsync(id, User);
 
-            if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                var currentUser = await userManager.GetUserAsync(User);
-
-                if (currentUser != null)
-                {
-                    ViewBag.AlreadyClaimed = context.Claims.Any(c =>
-                        c.ItemId == id &&
-                        c.UserId == currentUser.Id);
-                }
-            }
-            ViewBag.AlreadyClaimed = false;
-            
             return View(item);
         }
 
-
         [Authorize]
         [HttpGet]
-        public IActionResult Create([FromQuery]string? type)
+        public IActionResult Create([FromQuery] string? type)
         {
-            var item = new Item();
+            var model = new ItemViewModel();
 
             if (!string.IsNullOrEmpty(type))
             {
                 if (type.Equals("lost", StringComparison.OrdinalIgnoreCase))
-                {
-                    item.Status = ItemType.Lost;
-                }
+                    model.Status = ItemType.Lost;
                 else if (type.Equals("found", StringComparison.OrdinalIgnoreCase))
-                {
-                    item.Status = ItemType.Found;
-                }
+                    model.Status = ItemType.Found;
             }
-            return View(item);
+            model.Questions.Add(new VerificationQuestionViewModel());
+
+            return View(model);
         }
+
         [Authorize]
         [HttpPost]
-        public IActionResult Create(Item item,ICollection<VerificationQuestion> questions)
+        public IActionResult Create(ItemViewModel model)
         {
-            if (item.ImageFile != null) { 
-            using (var ms = new MemoryStream()) {
-                item.ImageFile.CopyTo(ms);
-                string base64 = Convert.ToBase64String(ms.ToArray());
-                    item.ImageBase64 = $"data:{item.ImageFile.ContentType};base64,{base64}";
-                                   } }
+            if (!ModelState.IsValid)
+                return View(model);
+
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            item.UserId = int.Parse(userIdClaim!);
-            item.ReportStatus = ReportStatus.Pending;
-            //if (!ModelState.IsValid)
-            //{
-            //    return View(item);
-            //}
-            context.Items.Add(item);
-            context.SaveChanges();
-            if (item.Status == ItemType.Found)
+            var userId = int.Parse(userIdClaim!);
+
+            var result = itemService.CreateItem(model, userId);
+
+            if (!result.Success)
             {
-                foreach (var q in questions)
-                {
-                    if (string.IsNullOrWhiteSpace(q.QuestionText))
-                        continue;
-
-                    q.ItemId = item.ItemId;
-                    context.VerificationQuestions.Add(q);
-                }
-
-                context.SaveChanges();
+                ModelState.AddModelError("", result.ErrorMessage!);
+                return View(model);
             }
-            context.SaveChanges();
 
             return RedirectToAction(nameof(Browse));
         }

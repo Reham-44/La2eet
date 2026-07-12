@@ -93,11 +93,19 @@
                         ? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
                         : null;
                         bool isOwner = currentUserId != null && Model.UserId.ToString() == currentUserId;
-                    }
-                    @{
                         bool alreadyClaimed = ViewBag.AlreadyClaimed ?? false;
                     }
-                    @if (isOwner)
+                    @if (Model.IsResolved)
+                    {
+                        <button class="btn btn-success w-100 mb-2 btn-lg" disabled>
+                            <i class="fas fa-check-circle me-2"></i>
+                            تم استرجاع الغرض
+                        </button>
+                    }
+                    else
+                    {
+                        
+                                @if (isOwner)
                     {
                         <div class="alert alert-info small mb-2">
                             <i class="fas fa-info-circle me-1"></i> ده البلاغ بتاعك، هتشوف المطالبات الواردة عليه من صفحة "مطالباتي".
@@ -106,16 +114,11 @@
                             <i class="fas fa-inbox me-2"></i>عرض المطالبات الواردة
                         </a>
                     }
-                    else if (Model.Status == ItemType.Found)
+                    else{
+                    if (Model.Status == ItemType.Found)
                     {
-                        @if (Model.IsResolved)
-                        {
-                            <button class="btn btn-success w-100 mb-2 btn-lg" disabled>
-                                <i class="fas fa-check-circle me-2"></i>
-                                تم استرجاع الغرض
-                            </button>
-                        }
-                        else if (alreadyClaimed)
+                     
+                         if (alreadyClaimed)
                         {
                             <button class="btn btn-secondary w-100 mb-2 btn-lg" disabled>
                                 <i class="fas fa-check me-2"></i>
@@ -131,18 +134,24 @@
                                 <i class="fas fa-hand-holding me-2"></i>
                                 المطالبة بالغرض
                             </a>
+                            <a asp-controller="Items" asp-action="Browse" class="btn btn-outline-secondary w-100"><i class="fas fa-list me-2"></i>عرض مشابهة</a>
+                                    <div class="safety-tip mb-2">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <div>المطالبة هتتراجع من قبل صاحب البلاغ عشان يتأكد إنك فعلاً صاحب الغرض.</div>
+                                    </div>
                         }
-                        <div class="safety-tip mb-2">
-                            <i class="fas fa-shield-alt"></i>
-                            <div>المطالبة هتتراجع من قبل صاحب البلاغ عشان يتأكد إنك فعلاً صاحب الغرض.</div>
-                        </div>
+
                     }
-                    else
+                    else if (Model.Status == ItemType.Lost)
                     {
                         <button class="btn btn-success w-100 mb-2 btn-lg" onclick="openContactModal()"><i class="fas fa-comments me-2"></i>تواصل مع الفاقد</button>
+                        <a asp-controller="Items" asp-action="Browse" class="btn btn-outline-secondary w-100"><i class="fas fa-list me-2"></i>عرض مشابهة</a>
+                    }
                     }
 
-                    <a asp-controller="Items" asp-action="Browse" class="btn btn-outline-secondary w-100"><i class="fas fa-list me-2"></i>عرض مشابهة</a>
+                    }
+                   
+
                 </div>
 
                 <div class="detail-card">

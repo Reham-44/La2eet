@@ -104,28 +104,19 @@ namespace LostAndFound.Controllers
                     answerParts.Add($"{q.QuestionText}: {answer}");
                 }
             }
-            else
-            {
-                // لو الغرض مفيهوش أسئلة تحقق، ناخد إجابة عامة بديلة
-                var generalAnswer = Request.Form["verificationAnswer"].ToString();
-                if (string.IsNullOrWhiteSpace(generalAnswer))
-                    hasEmptyAnswer = true;
-
-                answerParts.Add(generalAnswer);
-            }
-
             if (hasEmptyAnswer)
             {
                 ViewBag.Item = item;
                 ViewBag.Error = "من فضلك جاوب على كل الأسئلة";
                 return View();
             }
-
             var claim = new Claim
             {
                 ItemId = itemId,
                 UserId = currentUser.Id,
-                VerificationAnswer = string.Join(" | ", answerParts),
+                VerificationAnswer = answerParts.Any()
+    ? string.Join(" | ", answerParts)
+    : null,
                 ClaimStatus = ClaimStatus.Pending,
                 CreatedAt = DateTime.Now
             };

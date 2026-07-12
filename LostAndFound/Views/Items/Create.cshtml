@@ -1,5 +1,5 @@
 @using LostAndFound.Enums
-@model LostAndFound.Models.Item
+@model LostAndFound.Models.ViewModels.ItemViewModel
 @{
     ViewData["Title"] = "أضف بلاغ";
 }
@@ -16,14 +16,13 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
 
-                <!-- Type Selector -->
-
                 <div class="post-card">
                     <form asp-action="Create"
                           asp-controller="Items"
                           method="post"
-                          enctype="multipart/form-data">
-
+                          enctype="multipart/form-data"
+                          novalidate>
+                        <div class="text-danger mb-3"></div>
                         <div class="post-card mb-4 text-center">
                             <h5 class="fw-bold mb-3">نوع البلاغ</h5>
                             <div class="row g-3">
@@ -60,7 +59,6 @@
 
                             </div>
                         </div> 
-                                     @* <span asp-validation-for="Status"></span>               *@
                         <!-- Basic Info -->
                         <h6 class="fw-bold mb-3 pb-2" style="border-bottom:2px solid var(--primary-light)"><i class="fas fa-info-circle me-2 text-primary"></i>بيانات الغرض</h6>
 
@@ -73,10 +71,12 @@
                             <div class="col-md-6">
                                 <label class="form-label" for="itemDate">تاريخ الفقدان/الإيجاد <span class="text-danger">*</span></label>
                                 <input asp-for="LostOrFoundDate"
+                                       id="LostOrFoundDate"
                                        type="date"
                                        class="form-control" />
 
                                 <span asp-validation-for="LostOrFoundDate" class="text-danger"></span>
+                                <span id="dateError" class="text-danger"></span>
                             </div>
                             <div class="col-12">
                                 <label class="form-label" for="itemDesc">الوصف التفصيلي <span class="text-danger">*</span></label>
@@ -141,12 +141,23 @@
                                 <div id="questionsContainer">
                                     <div class="question-item mb-3 row g-2">
                                         <div class="col-md-7">
-                                            <label class="form-label small">السؤال</label>
-                                            <input type="text" class="form-control" name="questions[0].QuestionText" placeholder="مثال: كم عدد البطاقات؟" />
+                                            <label class="form-label small">السؤال <span class="text-danger">*</span></label>
+                                            <input asp-for="Questions[0].QuestionText"
+                                                   class="form-control"
+                                                   placeholder="مثال: كم عدد البطاقات؟" />
+
+                                            <span asp-validation-for="Questions[0].QuestionText"
+                                                  class="text-danger"></span>
+
                                         </div>
                                         <div class="col-md-5">
-                                            <label class="form-label small">الإجابة الصحيحة</label>
-                                            <input type="text" class="form-control" name="questions[0].ExpectedAnswerHash" placeholder="الإجابة" />
+                                            <label class="form-label small">الإجابة الصحيحة <span class="text-danger">*</span> </label>
+                                            <input asp-for="Questions[0].ExpectedAnswerHash"
+                                                   class="form-control"
+                                                   placeholder="الإجابة" />
+
+                                            <span asp-validation-for="Questions[0].ExpectedAnswerHash"
+                                                  class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -182,17 +193,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="data.js"></script>
 <script>
-    // let selectedType = '';
-
-    // function selectType(type) {
-    //   selectedType = type;
-    //   document.getElementById('reportType').value = type;
-    //   document.getElementById('typeLost').style.background = type === 'lost' ? '#fee2e2' : '#fff';
-    //   document.getElementById('typeLost').style.borderColor = type === 'lost' ? '#ef4444' : '#dee2e6';
-    //   document.getElementById('typeFound').style.background = type === 'found' ? '#dcfce7' : '#fff';
-    //   document.getElementById('typeFound').style.borderColor = type === 'found' ? '#10b981' : '#dee2e6';
-    //   document.getElementById('verificationSection').style.display = type === 'found' ? '' : 'none';
-    // }
 
     function uploadedImg(input) {
       if (input.files && input.files.length > 0) {
@@ -217,8 +217,36 @@
     document.getElementById("verificationSection").style.display =
         found ? "block" : "none";
     }
+    const dateInput = document.getElementById("LostOrFoundDate");
+    const dateError = document.getElementById("dateError");
 
+    function validateDate() {
+        if (!dateInput.value) {
+            dateError.textContent = "";
+            return true;
+        }
 
+        const selectedDate = new Date(dateInput.value);
+        const minDate = new Date("2010-01-01");
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+
+        if (selectedDate < minDate || selectedDate > today) {
+            dateError.textContent = "التاريخ يجب أن يكون بين 01/01/2010 واليوم";
+            return false;
+        }
+
+        dateError.textContent = "";
+        return true;
+    }
+
+    dateInput.addEventListener("blur", validateDate);
+
+    document.querySelector("form").addEventListener("submit", function (e) {
+        if (!validateDate()) {
+            e.preventDefault();
+        }
+    });
 
      let questionIndex = 1;
     function addQuestion() {
@@ -231,10 +259,11 @@
 
         div.innerHTML = `
             <div class="col-md-7">
-                <label class="form-label small">السؤال</label>
+                <label class="form-label small">السؤال<span class="text-danger">*</span></label>
                 <input
                     type="text"
                     class="form-control"
+                    required 
                     name="questions[${questionIndex}].QuestionText">
             </div>
 
@@ -243,6 +272,7 @@
                 <input
                     type="text"
                     class="form-control"
+                    required
                     name="questions[${questionIndex}].ExpectedAnswerHash">
             </div>
 
@@ -261,47 +291,6 @@
         questionIndex++;
     }
 
-    // document.getElementById('postForm').addEventListener('submit', function(e) {
-    //   e.preventDefault();
-    //   if (!selectedType) { alert('اختار نوع البلاغ أولاً (مفقود أو موجود)'); return; }
-    //   if (!this.checkValidity()) { this.classList.add('was-validated'); return; }
-
-    //   Build item object
-    //   const questions = [];
-    //   document.querySelectorAll('.question-item').forEach(item => {
-    //     const inputs = item.querySelectorAll('input');
-    //     if (inputs[0].value && inputs[1].value) questions.push({ question: inputs[0].value, answer: inputs[1].value });
-    //   });
-
-    //   const imgSrc = document.getElementById('imagePreview').src || 'https:images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80';
-    //   const newItem = {
-    //     id: Date.now(),
-    //     title: document.getElementById('itemTitle').value,
-    //     description: document.getElementById('itemDesc').value,
-    //     category: document.getElementById('itemCategory').value,
-    //     status: selectedType,
-    //     city: document.getElementById('itemCity').value,
-    //     location: document.getElementById('itemLocation').value || '',
-    //     date: document.getElementById('itemDate').value,
-    //     image: imgSrc.startsWith('data:') ? imgSrc : 'https:images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80',
-    //     contact: document.getElementById('itemContact').value,
-    //     postedBy: 'أنت',
-    //     verified: questions.length > 0,
-    //     verificationQuestions: questions
-    //   };
-
-      // const stored = getFromStorage('laqeet_items');
-      // stored.push(newItem);
-      // saveToStorage('laqeet_items', stored);
-
-    //   new bootstrap.Modal(document.getElementById('successModal')).show();
-    // });
-
-    // document.addEventListener('DOMContentLoaded', () => {
-    //   initSelects();
-    //   const type = new URLSearchParams(location.search).get('type');
-    //   if (type) selectType(type);
-    // });
 </script>
 @section scripts {
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
