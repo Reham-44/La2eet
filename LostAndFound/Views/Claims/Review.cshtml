@@ -1,0 +1,181 @@
+﻿@model LostAndFound.Models.Claim
+@{
+    ViewData["Title"] = "مراجعة المطالبة";
+    var answers = Model.VerificationAnswer?.Split('|') ?? Array.Empty<string>();
+}
+
+<div class="browse-header ">
+    <div class="container text-center">
+        <h1 class="fw-bold">
+            <i class="fas fa-clipboard-check me-2"></i>
+            مراجعة المطالبة
+        </h1>
+
+        <p class="text-white-50 mb-0">
+            راجع إجابات المطالب قبل قبول أو رفض المطالبة.
+        </p>
+    </div>
+</div>
+
+<div class="container py-4">
+
+    <div class="row g-3 mb-2 justify-content-center">
+
+        <div class="col-md-3">
+            <div class="info-card">
+                <i class="fas fa-hashtag"></i>
+                <small>رقم المطالبة</small>
+                <h6>#@Model.ClaimId</h6>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="info-card">
+                <i class="fas fa-box"></i>
+                <small>العنصر</small>
+                <h6>@Model.Item.Title</h6>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="info-card">
+                <i class="fas fa-calendar"></i>
+                <small>التاريخ</small>
+                <h6>@Model.CreatedAt.ToString("dd MMM yyyy")</h6>
+            </div>
+        </div>
+
+        
+
+    </div>
+
+    <div class="d-flex align-items-center mb-4">
+
+        <i class="fas fa-list-check text-primary fs-2"></i>
+
+        <div class="ms-3">
+
+            <h3 class="fw-bold mb-0">
+                مراجعة الإجابات
+            </h3>
+
+            <span class="text-muted">
+                قارن بين الإجابات الصحيحة وإجابة المطالب
+            </span>
+
+        </div>
+
+    </div>
+
+
+    @for (int i = 0; i < Model.Item.VerificationQuestions.Count; i++)
+    {
+        var q = Model.Item.VerificationQuestions.ElementAt(i);
+
+        <div class="card answer-card border-0 shadow-sm mb-2">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+
+                    <h5 class="fw-bold mb-0">
+
+                        <span class="question-number">
+                            @(i + 1)
+                        </span>
+
+                        @q.QuestionText
+
+                    </h5>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <div class="answer-box success">
+
+                            <small class="text-muted d-block mb-2">
+                                الإجابة الصحيحة
+                            </small>
+
+                            <h5 class="mb-0">
+
+                                <i class="fas fa-circle-check text-success me-2"></i>
+
+                                @q.ExpectedAnswerHash
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mt-3 mt-md-0">
+
+                        <div class="answer-box primary">
+
+                            <small class="text-muted d-block mb-2">
+                                إجابة المطالب
+                            </small>
+
+                            <h5 class="mb-0">
+
+                                <i class="fas fa-user-edit text-primary me-2"></i>
+
+                                @(i<answers.Length? answers[i] : "-")
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    }
+
+
+    @if (Model.ClaimStatus == LostAndFound.Enums.ClaimStatus.Pending)
+    {
+        <div class="text-center mt-4">
+
+            <form asp-action="Approve"
+                  asp-route-id="@Model.ClaimId"
+                  method="post"
+                  class="d-inline">
+
+                <button class="btn btn-success btn-lg px-5 rounded-pill">
+
+                    <i class="fas fa-check me-2"></i>
+
+                    قبول المطالبة
+
+                </button>
+
+            </form>
+
+            <form asp-action="Reject"
+                  asp-route-id="@Model.ClaimId"
+                  method="post"
+                  class="d-inline ms-2">
+
+                <button class="btn btn-danger btn-lg px-5 rounded-pill">
+
+                    <i class="fas fa-times me-2"></i>
+
+                    رفض المطالبة
+
+                </button>
+
+            </form>
+
+        </div>
+    }
+
+</div>

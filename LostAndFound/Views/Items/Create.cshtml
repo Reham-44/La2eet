@@ -227,12 +227,12 @@
         }
 
         const selectedDate = new Date(dateInput.value);
-        const minDate = new Date("2010-01-01");
+        const minDate = new Date("2000-01-01");
         const today = new Date();
         today.setHours(23, 59, 59, 999);
 
         if (selectedDate < minDate || selectedDate > today) {
-            dateError.textContent = "التاريخ يجب أن يكون بين 01/01/2010 واليوم";
+            dateError.textContent = "التاريخ يجب أن يكون بين 01/01/2000 واليوم";
             return false;
         }
 

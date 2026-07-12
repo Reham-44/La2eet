@@ -101,7 +101,7 @@ namespace LostAndFound.Controllers
                     if (string.IsNullOrWhiteSpace(answer))
                         hasEmptyAnswer = true;
 
-                    answerParts.Add($"{q.QuestionText}: {answer}");
+                    answerParts.Add(answer);
                 }
             }
             if (hasEmptyAnswer)
@@ -115,7 +115,7 @@ namespace LostAndFound.Controllers
                 ItemId = itemId,
                 UserId = currentUser.Id,
                 VerificationAnswer = answerParts.Any()
-    ? string.Join(" | ", answerParts)
+    ? string.Join("|", answerParts)
     : null,
                 ClaimStatus = ClaimStatus.Pending,
                 CreatedAt = DateTime.Now
@@ -158,6 +158,26 @@ namespace LostAndFound.Controllers
             _context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> Review(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+                return Challenge();
+
+            var claim = _context.Claims
+                .Include(c => c.User)
+                .Include(c => c.Item)
+                    .ThenInclude(i => i.VerificationQuestions)
+                .FirstOrDefault(c => c.ClaimId == id);
+
+            if (claim == null)
+                return NotFound();
+
+            if (claim.Item.UserId != currentUser.Id)
+                return Forbid();
+
+            return View(claim);
         }
     }
 }
