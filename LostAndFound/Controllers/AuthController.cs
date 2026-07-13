@@ -5,20 +5,32 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
-
+using LostAndFound.Services;
 namespace LostAndFound.Controllers
 {
     public class AuthController : Controller
     {
+        //   private readonly UserManager<User> _userManager;
+        // private readonly SignInManager<User> _signInManager;
+
+        // public AuthController(UserManager<User> userManager, SignInManager<User> signInManager)
+        // {
+        //    _userManager = userManager;
+        //  _signInManager = signInManager;
+        //  }
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IEmailService _emailService;
 
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AuthController(
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
         }
-
         // GET: /Auth/Login
         [HttpGet]
         public IActionResult Login()
@@ -35,6 +47,11 @@ namespace LostAndFound.Controllers
 
             // اتأكد الأول إن الحساب مش محظور قبل ما نحاول نعمله Sign In
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null && !existingUser.EmailConfirmed)
+            {
+                ModelState.AddModelError("", "من فضلك أكّد البريد الإلكتروني الأول");
+                return View(model);
+            }
             if (existingUser != null && existingUser.IsBanned)
             {
                 ModelState.AddModelError(string.Empty, "تم حظر هذا الحساب، تواصل مع الدعم لمزيد من التفاصيل");
@@ -74,17 +91,16 @@ namespace LostAndFound.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
-
             var user = new User
             {
                 UserName = model.Email,
                 Email = model.Email,
                 FullName = model.FullName,
                 Phone = model.Phone,
+                EmailConfirmed = false,
                 IsVerified = false,
-                Role = Role.USER // أي حساب بيتعمل من صفحة التسجيل العادية بيبقى USER دايمًا
+                Role = Role.USER
             };
-
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
@@ -95,13 +111,41 @@ namespace LostAndFound.Controllers
                 return View(model);
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
 
-            return RedirectToAction("Index", "Home");
+
+
+
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var confirmationLink = Url.Action(
+                "ConfirmEmail",
+                "Auth",
+                new
+                {
+                    userId = user.Id,
+                    token = token
+                },
+                Request.Scheme);
+
+
+            await _emailService.SendEmailAsync(
+                user.Email,
+                "تأكيد البريد الإلكتروني",
+                $@"
+    <h2>Lost & Found</h2>
+    <p>اضغط على الرابط التالي لتأكيد بريدك الإلكتروني:</p>
+    <a href='{confirmationLink}'>تأكيد الحساب</a>
+    "
+            );
+
+            TempData["SuccessMessage"] = "تم إنشاء الحساب بنجاح. تم إرسال رابط تأكيد إلى بريدك الإلكتروني.";
+            return RedirectToAction("Login");
+            // return RedirectToAction("Login");
         }
 
-        // POST: /Auth/Logout
-        [HttpPost]
+            // POST: /Auth/Logout
+            [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -139,8 +183,15 @@ namespace LostAndFound.Controllers
 
             // TODO: لما يبقى عندك خدمة إيميل حقيقية (SMTP/SendGrid)،
             // ابعت resetLink بدل ما تعرضه على الشاشة، وامسح الـ ViewBag.ResetLink من View التأكيد
-            ViewBag.ResetLink = resetLink;
-
+            // ViewBag.ResetLink = resetLink;
+            await _emailService.SendEmailAsync(
+     model.Email,
+     "إعادة تعيين كلمة المرور",
+     $@"
+    <h2>Lost & Found</h2>
+    <p>اضغطي على الرابط التالي لإعادة تعيين كلمة المرور:</p>
+    <a href='{resetLink}'>إعادة تعيين كلمة المرور</a>
+    ");
             return View("ForgotPasswordConfirmation");
         }
 
@@ -202,6 +253,36 @@ namespace LostAndFound.Controllers
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId == null || token == null)
+                return RedirectToAction("Login");
+
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return RedirectToAction("Login");
+
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+
+
+            if (result.Succeeded)
+            {
+                user.IsVerified = true;
+                user.EmailConfirmed = true;
+
+                await _userManager.UpdateAsync(user);
+
+                return View("EmailConfirmed");
+            }
+
+            return View("Error");
+        }
+
         [HttpGet]
         public async Task<IActionResult> GoogleResponse()
         {
@@ -209,6 +290,8 @@ namespace LostAndFound.Controllers
 
             if (info == null)
                 return RedirectToAction(nameof(Login));
+
+           
 
             // لو الحساب مربوط بجوجل بالفعل
             var result = await _signInManager.ExternalLoginSignInAsync(
@@ -233,6 +316,7 @@ namespace LostAndFound.Controllers
                 {
                     UserName = email,
                     Email = email,
+                    EmailConfirmed = true,
                     FullName = info.Principal.FindFirstValue(ClaimTypes.Name) ?? "",
                     Role = Role.USER,
                     IsVerified = true

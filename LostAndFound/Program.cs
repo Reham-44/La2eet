@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<LostAndFoundDbContext>(options =>
@@ -29,7 +30,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.AllowedForNewUsers = true;
 
-    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedEmail = true;
     options.SignIn.RequireConfirmedPhoneNumber = false;
 })
 .AddEntityFrameworkStores<LostAndFoundDbContext>()
@@ -58,6 +59,10 @@ builder.Services.AddAuthentication()
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
     });
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

@@ -12,6 +12,14 @@
                     <p>سجّل دخولك للمتابعة</p>
                 </div>
 
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
                 @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
                 {
                     <div class="alert alert-danger">
