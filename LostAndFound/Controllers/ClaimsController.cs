@@ -81,8 +81,8 @@ namespace LostAndFound.Controllers
                 return View();
             }
             var alreadyClaimed = _context.Claims.Any(c =>
-    c.ItemId == itemId &&
-    c.UserId == currentUser.Id);
+                            c.ItemId == itemId &&
+                            c.UserId == currentUser.Id);
 
             if (alreadyClaimed)
             {
@@ -115,8 +115,8 @@ namespace LostAndFound.Controllers
                 ItemId = itemId,
                 UserId = currentUser.Id,
                 VerificationAnswer = answerParts.Any()
-    ? string.Join("|", answerParts)
-    : null,
+                                ? string.Join("|", answerParts)
+                                : null,
                 ClaimStatus = ClaimStatus.Pending,
                 CreatedAt = DateTime.Now
             };

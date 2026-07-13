@@ -13,7 +13,6 @@ namespace LostAndFound
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
-            // إنشاء الأدوار
             string[] roleNames = { "Admin", "Moderator", "User" };
             foreach (var roleName in roleNames)
             {
@@ -24,7 +23,6 @@ namespace LostAndFound
                 }
             }
 
-            // إنشاء Admin إذا لم يكن موجوداً
             var adminUser = await userManager.FindByEmailAsync("admin@lostandfound.com");
             if (adminUser == null)
             {

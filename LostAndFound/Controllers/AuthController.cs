@@ -45,7 +45,6 @@ namespace LostAndFound.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // اتأكد الأول إن الحساب مش محظور قبل ما نحاول نعمله Sign In
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null && !existingUser.EmailConfirmed)
             {
@@ -67,7 +66,6 @@ namespace LostAndFound.Controllers
                 return View(model);
             }
 
-            // نجيب اليوزر عشان نعرف الـ Role بتاعه ونوجهه صح
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user != null && user.Role == Role.ADMIN)
@@ -99,7 +97,7 @@ namespace LostAndFound.Controllers
                 Phone = model.Phone,
                 EmailConfirmed = false,
                 IsVerified = false,
-                Role = Role.USER
+                Role = Role.USER 
             };
             var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -168,8 +166,6 @@ namespace LostAndFound.Controllers
 
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            // ملاحظة أمنية: منقولش "الإيميل مش موجود" عشان محدش يقدر يتأكد
-            // مين اليوزرز المسجلين عن طريق تجربة إيميلات عشوائية
             if (user == null)
             {
                 ViewBag.Message = "لو الإيميل ده مسجل عندنا، هيوصلك رابط إعادة تعيين كلمة المرور.";
@@ -181,17 +177,9 @@ namespace LostAndFound.Controllers
             var resetLink = Url.Action("ResetPassword", "Auth",
                 new { email = model.Email, token = token }, protocol: Request.Scheme);
 
-            // TODO: لما يبقى عندك خدمة إيميل حقيقية (SMTP/SendGrid)،
-            // ابعت resetLink بدل ما تعرضه على الشاشة، وامسح الـ ViewBag.ResetLink من View التأكيد
-            // ViewBag.ResetLink = resetLink;
-            await _emailService.SendEmailAsync(
-     model.Email,
-     "إعادة تعيين كلمة المرور",
-     $@"
-    <h2>Lost & Found</h2>
-    <p>اضغطي على الرابط التالي لإعادة تعيين كلمة المرور:</p>
-    <a href='{resetLink}'>إعادة تعيين كلمة المرور</a>
-    ");
+
+            ViewBag.ResetLink = resetLink;
+
             return View("ForgotPasswordConfirmation");
         }
 
@@ -216,7 +204,6 @@ namespace LostAndFound.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                // منورّيش السبب الحقيقي، بس نوجهه كإنه نجح عشان أمان الحسابات
                 return RedirectToAction(nameof(ResetPasswordConfirmation));
             }
 
@@ -291,9 +278,7 @@ namespace LostAndFound.Controllers
             if (info == null)
                 return RedirectToAction(nameof(Login));
 
-           
-
-            // لو الحساب مربوط بجوجل بالفعل
+            
             var result = await _signInManager.ExternalLoginSignInAsync(
                 info.LoginProvider,
                 info.ProviderKey,
@@ -302,7 +287,6 @@ namespace LostAndFound.Controllers
             if (result.Succeeded)
                 return RedirectToAction("Index", "Home");
 
-            // أول مرة يسجل بجوجل
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
 
             if (email == null)
@@ -328,18 +312,11 @@ namespace LostAndFound.Controllers
                     return RedirectToAction(nameof(Login));
             }
 
-            // اربط حساب جوجل بالحساب
             await _userManager.AddLoginAsync(user, info);
 
-            // اعمل Login
             await _signInManager.SignInAsync(user, false);
 
             return RedirectToAction("Index", "Home");
         }
-
-
-
-
-
     }
 }
