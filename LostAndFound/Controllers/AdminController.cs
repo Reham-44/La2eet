@@ -1,3 +1,4 @@
+using LostAndFound.Repositories;
 using LostAndFound.DbContexts;
 using LostAndFound.Enums;
 using LostAndFound.Models;
@@ -11,34 +12,30 @@ namespace LostAndFound.Controllers
     [Authorize(Roles="Admin")]
     public class AdminController : Controller
     {
-        private readonly LostAndFoundDbContext _context;
+        private readonly AdminRepository _adminRepo;
 
-        public AdminController(LostAndFoundDbContext context)
+        public AdminController(AdminRepository adminRepository)
         {
-            _context = context;
+           _adminRepo = adminRepository;
         }
         public IActionResult Index()
         {
             var viewModel = new AdminDashboardViewModel
             {
-                TotalReports = _context.Items.Count(),
+                TotalReports = _adminRepo.GetTotalReportsCount(),
 
-                LostReports = _context.Items.Count(i => i.Status == ItemType.Lost),
-                FoundReports = _context.Items.Count(i => i.Status == ItemType.Found),
+                LostReports = _adminRepo.GetReportsCountByType(ItemType.Lost),
+                FoundReports = _adminRepo.GetReportsCountByType(ItemType.Found),
 
-                ActiveClaims = _context.Claims.Count(),
 
-                RecentItems = _context.Items
-                       .OrderByDescending(i => i.CreatedAt)
-                       .Take(8)
-                       .ToList(),
+                ActiveClaims = _adminRepo.GetActiveClaimsCount(),
 
-                CitySummary = _context.Items
-                       .GroupBy(i => i.City)
-                       .Select(g => new { CityName = g.Key.ToString(), Count = g.Count() })
-                       .OrderByDescending(x => x.Count)
-                       .Take(6)
-                       .ToDictionary(k => k.CityName, v => v.Count)
+                RecentItems = _adminRepo.GetRecentItems(8),
+
+
+                CitySummary = _adminRepo.GetCitySummary(6),
+                ReturnedItemsCount = _adminRepo.GetReturnedItemsCount(),
+                RecentReturnedItems = _adminRepo.GetRecentReturnedItems(5)
             };
 
             return View(viewModel);
@@ -46,10 +43,10 @@ namespace LostAndFound.Controllers
         [HttpPost]
         public IActionResult ApproveItem(int id)
         {
-            var item = _context.Items.Find(id);
+            var item = _adminRepo.GetItemById(id);
             if (item != null) {
                 item.ReportStatus =ReportStatus.Approved;
-                _context.SaveChanges();
+                _adminRepo.SaveChanges();
             }
             return RedirectToAction("Index");
         }
@@ -57,27 +54,33 @@ namespace LostAndFound.Controllers
         [HttpPost]
         public IActionResult RejectItem(int id)
         {
-            var item = _context.Items.Find(id);
+            var item = _adminRepo.GetItemById(id);
             if (item != null)
             {
                 item.ReportStatus =ReportStatus.Rejected;
-                _context.SaveChanges();
+                _adminRepo.SaveChanges();
             }
             return RedirectToAction("Index");
         }
         [HttpPost]
         public IActionResult BanUser(int userId) { 
-        var user=_context.Users.Find(userId);
+        var user=_adminRepo.GetUserById(userId);
             if (user != null) {
-                user.IsBanned = true;
-                _context.SaveChanges();
+                user.IsBanned = !user.IsBanned;
+                _adminRepo.SaveChanges();
+            }
+            string referer = Request.Headers["Referer"].ToString();
+            if (referer != null)
+            {
+                return Redirect(referer);
             }
             return RedirectToAction("Index");
 
         }
+
         public IActionResult ExportReportsToExcel()
         {
-            var items = _context.Items.ToList();
+            var items = _adminRepo.GetAllItems();
 
             using (var workbook = new XLWorkbook())
             {

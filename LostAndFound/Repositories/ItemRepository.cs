@@ -1,4 +1,5 @@
-﻿using LostAndFound.DbContexts;
+﻿using DocumentFormat.OpenXml.ExtendedProperties;
+using LostAndFound.DbContexts;
 using LostAndFound.Enums;
 using LostAndFound.Models;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +46,26 @@ namespace LostAndFound.Repositories
         {
             return context.Claims.Any(c => c.ItemId == itemId && c.UserId == userId);
         }
+        public List<Item> GetSimilarItems(Item currentItem, int count = 3)
+        {
+            var words = currentItem.Title
+    .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+    .Select(w => w.ToLower())
+    .ToList();
 
+            return context.Items
+                    .Include(i => i.User)
+    .AsEnumerable()   
+    .Where(i =>
+        i.ItemId != currentItem.ItemId &&
+        i.ReportStatus == ReportStatus.Approved &&
+        !i.User.IsBanned &&
+        i.Status != currentItem.Status &&
+        i.City == currentItem.City &&
+        words.Any(word => i.Title.ToLower().Contains(word)))
+    .Take(count)
+    .ToList();
+        }
         public void SaveChanges()
         {
             context.SaveChanges();

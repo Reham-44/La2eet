@@ -1,3 +1,4 @@
+@using System.Globalization
 @model List<LostAndFound.Models.Item>
 @{
     ViewData["Title"] = "لقيت – منصة المفقودات والموجودات";
@@ -12,11 +13,20 @@
                     <p class="hero-sub mt-3 mb-4">
                         منصة <strong>لقيت</strong> بتساعدك تلاقي أغراضك الضايعة أو توصّل اللي لقيته لصاحبه. سهل، سريع، وموثوق.
                     </p>
-                    <div class="hero-search-box mb-4">
+                    <form asp-controller="Items" asp-action="Browse" method="get" class="hero-search-box mb-4">
+
                         <i class="fas fa-search text-muted" style="margin:0 0.5rem"></i>
-                        <input type="text" id="heroSearch" placeholder="ابحث عن محفظة، هاتف، مفاتيح..." />
-                        <button onclick="doHeroSearch()"><i class="fas fa-search me-1"></i> ابحث</button>
-                    </div>
+
+                        <input type="text"
+                               name="search"
+                               placeholder="ابحث عن محفظة، هاتف، مفاتيح..." />
+
+                        <button type="submit">
+                            <i class="fas fa-search me-1"></i>
+                            ابحث
+                        </button>
+
+                    </form>
                     <div class="d-flex gap-3 flex-wrap">
                         <a href="@Url.Action("Create", "Items", new { type = "lost" })" class="btn btn-warning btn-lg"><i class="fas fa-exclamation-circle me-2"></i>بلّغ عن مفقود</a>
                         <a href="@Url.Action("Create", "Items", new { type = "found" })" class="btn btn-outline-light btn-lg"><i class="fas fa-check-circle me-2"></i>أبلّغ عن موجود</a>
@@ -93,20 +103,20 @@
                                         </div>
                                     }
 
-                                    <span class="badge @(item.Status == ItemType.Lost ? "bg-danger" : "bg-success") position-absolute top-0 end-0 m-2">
-                                        @item.Status
-                                    </span>
+
+                                <span class="badge @(item.Status == ItemType.Lost ? "bg-danger" : item.Status == ItemType.Found ? "bg-success" : "bg-primary bg-opacity-75") position-absolute top-0 end-0 m-2">
+                                    @item.Status.GetDisplayName()
+                                </span>
 
                                 </div>
                             <div class="item-card-body">
                                 <div class="item-card-title">
-                                    <i class="fas fa-box text-primary me-1"></i>
                                     <span>@item.Title</span>
                                 </div>
                                 <div class="item-card-desc">@item.Description</div>
                                 <div class="item-card-meta">
-                                    <span><i class="fas fa-map-marker-alt"></i>@item.City</span>
-                                    <span><i class="fas fa-calendar"></i>@item.CreatedAt.ToString("dd MMM yyyy")</span>
+                                    <span><i class="fas fa-map-marker-alt"></i>@item.City.GetDisplayName()</span>
+                                    <span><i class="fas fa-calendar"></i>@item.LostOrFoundDate.ToString("dd MMMM yyyy", new CultureInfo("ar-EG"))</span>
                                 </div>
                             </div>
                         </div>

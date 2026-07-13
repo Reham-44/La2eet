@@ -14,46 +14,220 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/styles.css" />
+    <style>
+      
+
+        body {
+            background: #f4f6fb;
+        }
+
+        .admin-header {
+            position: relative;
+            overflow: hidden;
+            padding-block: 2rem;
+        }
+
+            .admin-header::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.08), transparent 40%), radial-gradient(circle at 85% 80%, rgba(255,255,255,0.06), transparent 45%);
+                pointer-events: none;
+            }
+
+        /* ---- Stat cards ---- */
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 1.1rem 1.25rem;
+            box-shadow: 0 4px 14px rgba(20, 20, 43, 0.06);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: transform .18s ease, box-shadow .18s ease;
+            height: 100%;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 24px rgba(20, 20, 43, 0.10);
+            }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.15rem;
+        }
+
+        .stat-card .num {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+            color: #1f2233;
+        }
+
+        .stat-card .lbl {
+            margin: 2px 0 0;
+            color: #8a8fa3;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* ---- Section cards ---- */
+        .detail-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 1.4rem;
+            box-shadow: 0 4px 14px rgba(20, 20, 43, 0.06);
+            border: 1px solid rgba(0,0,0,0.04);
+            margin-bottom: 1.25rem;
+        }
+
+            .detail-card h5 {
+                font-weight: 800;
+                color: #1f2233;
+            }
+
+        /* ---- Table ---- */
+        .table thead th {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            color: #8a8fa3;
+            border-bottom: 2px solid #eef0f6;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .table tbody tr {
+            transition: background .15s ease;
+        }
+
+            .table tbody tr:hover {
+                background: #f8f9fd;
+            }
+
+        .table tbody td {
+            border-bottom: 1px solid #f1f2f8;
+            vertical-align: middle;
+        }
+
+        .item-thumb {
+            width: 46px;
+            height: 46px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #eef0f6;
+        }
+
+        .btn-outline-primary.btn-view {
+            border-radius: 8px;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.7rem;
+            text-decoration: none;
+        }
+
+        .badge.rounded-pill {
+            font-weight: 700;
+            padding: 0.45em 0.8em;
+        }
+
+        /* ---- Quick actions ---- */
+        .quick-action-btn {
+            border-radius: 10px;
+            font-weight: 700;
+            padding: 0.65rem 1rem;
+            text-align: right;
+        }
+
+        /* ---- City summary ---- */
+        .city-row {
+            padding: 0.55rem 0;
+        }
+
+        .city-progress {
+            height: 6px;
+            border-radius: 6px;
+            background: #eef0f6;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .city-progress-bar {
+            height: 100%;
+            border-radius: 6px;
+            background: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: #b0b3c2;
+        }
+
+            .empty-state i {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+    </style>
 </head>
 <body>
 
-    <div class="admin-header">
-        <div class="container">
+    <div class="admin-header text-white">
+        <div class="container position-relative">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <div>
                     <h1 class="fw-bold mb-1"><i class="fas fa-chart-bar me-2"></i>لوحة الإدارة</h1>
                     <p class="mb-0" style="color:rgba(255,255,255,0.75)">متابعة البلاغات، المطالبات، وحالة المنصة</p>
                 </div>
-                <a href="@Url.Action("Browse", "Items")" class="btn btn-warning"><i class="fas fa-list me-1"></i> عرض البلاغات</a>
+                <a href="@Url.Action("Browse", "Items")" class="btn btn-warning fw-bold">
+                    <i class="fas fa-list me-1"></i> عرض البلاغات
+                </a>
             </div>
         </div>
     </div>
 
     <section class="py-4">
         <div class="container">
+
             <div class="row g-3 mb-4">
-                <div class="col-md-3 col-6">
+                <div class="col-md col-6">
                     <div class="stat-card">
                         <div class="stat-icon" style="background:var(--primary)"><i class="fas fa-clipboard-list"></i></div>
                         <div><p class="num">@Model.TotalReports</p><p class="lbl">إجمالي البلاغات</p></div>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
+                <div class="col-md col-6">
                     <div class="stat-card">
                         <div class="stat-icon" style="background:var(--danger)"><i class="fas fa-exclamation-circle"></i></div>
                         <div><p class="num">@Model.LostReports</p><p class="lbl">مفقودات</p></div>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
+                <div class="col-md col-6">
                     <div class="stat-card">
                         <div class="stat-icon" style="background:var(--success)"><i class="fas fa-check-circle"></i></div>
                         <div><p class="num">@Model.FoundReports</p><p class="lbl">موجودات</p></div>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
+                <div class="col-md col-6">
                     <div class="stat-card">
                         <div class="stat-icon" style="background:var(--secondary)"><i class="fas fa-hand-holding"></i></div>
                         <div><p class="num">@Model.ActiveClaims</p><p class="lbl">مطالبات نشطة</p></div>
+                    </div>
+                </div>
+                <div class="col-md col-12">
+                    <div class="stat-card" style="border: 1px solid #198754; background-color: #f8fff9;">
+                        <div class="stat-icon" style="background:#198754"><i class="fas fa-handshake"></i></div>
+                        <div><p class="num text-success">@Model.ReturnedItemsCount</p><p class="lbl text-success">تم استرجاعها</p></div>
                     </div>
                 </div>
             </div>
@@ -63,115 +237,174 @@
                     <div class="detail-card">
                         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                             <h5 class="mb-0"><i class="fas fa-clock me-2 text-primary"></i>أحدث البلاغات</h5>
+                            <span class="badge bg-light text-dark border">@Model.RecentItems.Count بلاغ</span>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table align-middle">
-                                <thead>
-                                    <tr>
-                                        <th>البلاغ</th>
-                                        <th>المدينة</th>
-                                        <th>الحالة</th>
-                                        <th>التاريخ</th>
-                                        <th>إجراء</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model.RecentItems)
-                                    {
 
-                                        string imgSrc = "/images/default-placeholder.png";
-                                        if (!string.IsNullOrEmpty(item.ImageBase64))
-                                        {
-                                            imgSrc = item.ImageBase64.StartsWith("data:image")
-                                                   ? item.ImageBase64
-                                                   : $"data:image/jpeg;base64,{item.ImageBase64}";
-                                        }
-
-
+                        @if (Model.RecentItems.Count == 0)
+                        {
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                لا توجد بلاغات حالياً
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead>
                                         <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <img src="@imgSrc" alt="@item.Title" style="width:46px;height:46px;object-fit:cover;border-radius:8px" />
-                                                    <div>
-                                                        <div class="fw-bold">@item.Title</div>
-                                                        <div class="small text-muted">@item.Location</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>@item.City.ToString()</td>
-                                            <td>
-                                                @if (item.Status.ToString() == "Found")
-                                                {
-                                                    <span class="badge bg-success rounded-pill">تم الإيجاد</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge bg-danger rounded-pill">مفقود</span>
-                                                }
-                                            </td>
-                                            <td>@item.CreatedAt.ToString("yyyy-MM-dd")</td>
-                                            <td>
-                                                <div class=" d-flex align-items-center gap-1">
-                                                    <a href="@Url.Action("Details","Items",new {id=item.ItemId})" class="btn-outline-primary">عرض</a>
-                                                    @if (item.ReportStatus.ToString() == "Pending")
-                                                    {
-                                                        <form asp-controller="Admin" asp-action="ApproveItem" method="post" class="m-0">
-                                                            <input type="hidden" name="id" value="@item.ItemId"/>
-                                                            <button type="submit" class="btn btn-sm btn-success" title="موافقة"> <i class="fas fa-check"></i></button>
-                                                        </form>
-                                                        <form asp-controller="Admin" asp-action="RejectItem" method="post" class="m-0">
-                                                            <input type="hidden" name="id" value="@item.ItemId"/>
-                                                            <button type="submit" class="btn btn-sm btn-danger" title="رفض"> <i class="fas fa-times"></i></button>
+                                            <th>البلاغ</th>
+                                            <th>المدينة</th>
+                                            <th>الحالة</th>
+                                            <th>التاريخ</th>
+                                            <th>إجراء</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.RecentItems)
+                                        {
+                                            string imgSrc = "/images/default-placeholder.png";
+                                            if (!string.IsNullOrEmpty(item.ImageBase64))
+                                            {
+                                                imgSrc = item.ImageBase64.StartsWith("data:image")
+                                                ? item.ImageBase64
+                                                : $"data:image/jpeg;base64,{item.ImageBase64}";
+                                            }
 
-                                                        </form>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <img src="@imgSrc" alt="@item.Title" class="item-thumb" />
+                                                        <div>
+                                                            <div class="fw-bold">@item.Title</div>
+                                                            <div class="small text-muted">@item.Location</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>@item.City.ToString()</td>
+                                                <td>
+                                                    @if (item.Status.ToString() == "Found")
+                                                    {
+                                                        <span class="badge bg-success rounded-pill">تم الإيجاد</span>
                                                     }
                                                     else
                                                     {
-                                                        <span class="badge @(item.ReportStatus.ToString() == "Approved" ?"bg-success":"bg-danger") " style="font-size:0.7rem;">
-                                                            @(item.ReportStatus.ToString()=="Approved"? "مقبول":"مرفوض")
-                                                        </span>
+                                                        <span class="badge bg-danger rounded-pill">مفقود</span>
                                                     }
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    }
-                                    @if (Model.RecentItems.Count == 0)
-                                    {
-                                        <tr><td colspan="5" class="text-center">لا توجد بلاغات حالياً</td></tr>
-                                    }
-                                </tbody>
-                            </table>
+                                                </td>
+                                                <td class="text-muted">@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        <a href="@Url.Action("Details","Items",new {id=item.ItemId})" class="btn btn-sm btn-outline-primary btn-view">عرض</a>
+                                                        @if (item.ReportStatus.ToString() == "Pending")
+                                                        {
+                                                            <form asp-controller="Admin" asp-action="ApproveItem" method="post" class="m-0">
+                                                                <input type="hidden" name="id" value="@item.ItemId" />
+                                                                <button type="submit" class="btn btn-sm btn-success" title="موافقة"><i class="fas fa-check"></i></button>
+                                                            </form>
+                                                            <form asp-controller="Admin" asp-action="RejectItem" method="post" class="m-0">
+                                                                <input type="hidden" name="id" value="@item.ItemId" />
+                                                                <button type="submit" class="btn btn-sm btn-danger" title="رفض"><i class="fas fa-times"></i></button>
+                                                            </form>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge @(item.ReportStatus.ToString() == "Approved" ? "bg-success" : "bg-danger")" style="font-size:0.7rem;">
+                                                                @(item.ReportStatus.ToString() == "Approved" ? "مقبول" : "مرفوض")
+                                                            </span>
+                                                        }
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="detail-card border-success" style="border-width: 2px;">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <h5 class="mb-0 text-success"><i class="fas fa-handshake me-2"></i>أغراض تم استرجاعها مؤخراً</h5>
+                            <span class="badge bg-success text-white">@Model.RecentReturnedItems.Count غرض</span>
                         </div>
+
+                        @if (Model.RecentReturnedItems.Count == 0)
+                        {
+                            <div class="empty-state">
+                                <i class="fas fa-box-open"></i>
+                                لم يتم استرجاع أي أغراض بعد.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>الغرض المسترجع</th>
+                                            <th>المدينة</th>
+                                            <th>تاريخ الإضافة</th>
+                                            <th>تاريخ الاسترجاع</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.RecentReturnedItems)
+                                        {
+                                            <tr>
+                                                <td class="fw-bold">@item.Title</td>
+                                                <td>@item.City.ToString()</td>
+                                                <td class="text-muted">@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                                <td>
+                                                    <span class="badge bg-success rounded-pill"><i class="fas fa-check me-1"></i>تم التسليم</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
                     </div>
                 </div>
 
                 <div class="col-lg-4">
                     <div class="detail-card">
-                        <h5><i class="fas fa-tasks me-2 text-warning"></i>مهام سريعة</h5>
+                        <h5 class="mb-3"><i class="fas fa-tasks me-2 text-warning"></i>مهام سريعة</h5>
                         <div class="d-grid gap-2">
-                            <button class="btn btn-outline-primary" onclick="showAdminToast('تم تحديث حالة المراجعة')">
+                            <button class="btn btn-outline-primary quick-action-btn" onclick="showAdminToast('تم تحديث حالة المراجعة')">
                                 <i class="fas fa-sync me-1"></i> تحديث المراجعة
                             </button>
-
-                            <a asp-controller="Admin" asp-action="ExportReportsToExcel" class="btn btn-outline-success" onclick="showAdminToast('جاري تحميل ملف الإكسيل...')">
+                            <a asp-controller="Admin" asp-action="ExportReportsToExcel" class="btn btn-outline-success quick-action-btn" onclick="showAdminToast('جاري تحميل ملف الإكسيل...')">
                                 <i class="fas fa-file-export me-1"></i> تصدير تقرير
                             </a>
                         </div>
                     </div>
 
                     <div class="detail-card">
-                        <h5><i class="fas fa-map-marker-alt me-2 text-success"></i>ملخص المدن</h5>
+                        <h5 class="mb-3"><i class="fas fa-map-marker-alt me-2 text-success"></i>ملخص المدن</h5>
+                        @{
+                            int maxCityCount = Model.CitySummary.Count > 0 ? Model.CitySummary.Values.Max() : 1;
+                            if (maxCityCount == 0) { maxCityCount = 1; }
+                        }
                         <div>
                             @foreach (var city in Model.CitySummary)
                             {
-                                <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
-                                    <span class="fw-bold text-secondary"><i class="fas fa-city me-2"></i>@city.Key</span>
-                                    <span class="badge bg-primary rounded-pill">@city.Value</span>
+                                <div class="city-row">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold text-secondary"><i class="fas fa-city me-2"></i>@city.Key</span>
+                                        <span class="badge bg-primary rounded-pill">@city.Value</span>
+                                    </div>
+                                    <div class="city-progress">
+                                        <div class="city-progress-bar" style="width:@((city.Value * 100.0 / maxCityCount).ToString("0"))%"></div>
+                                    </div>
                                 </div>
                             }
                             @if (Model.CitySummary.Count == 0)
                             {
-                                <p class="text-muted text-center small mt-3">لا توجد بيانات مدن حتى الآن.</p>
+                                <div class="empty-state">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    لا توجد بيانات مدن حتى الآن.
+                                </div>
                             }
                         </div>
                     </div>
@@ -192,8 +425,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function showAdminToast(msg) {
-          document.getElementById('adminToastBody').textContent = msg;
-          new bootstrap.Toast(document.getElementById('adminToast')).show();
+            document.getElementById('adminToastBody').textContent = msg;
+            new bootstrap.Toast(document.getElementById('adminToast')).show();
         }
     </script>
 </body>

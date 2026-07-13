@@ -8,7 +8,7 @@ namespace LostAndFound.Models.ViewModels
     public class ItemViewModel
     {
 
-            [Required(ErrorMessage = "اسم الغرض مطلوب")]
+       [Required(ErrorMessage = "اسم الغرض مطلوب")]
             public string Title { get; set; }
 
             [Required(ErrorMessage = "الوصف مطلوب")]

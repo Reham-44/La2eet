@@ -15,7 +15,7 @@ namespace LostAndFound.Controllers
             itemService = _itemService;
         }
 
-        public IActionResult Browse(string? search, ItemType? statusFilter, City? cityFilter, DateTime? dateFrom, DateTime? dateTo)
+        public IActionResult Browse(string? search, ItemType? statusFilter, City? cityFilter, DateTime? dateFrom, DateTime? dateTo , string? sortOrder)
         {
             var filter = new ItemFilter
             {
@@ -23,7 +23,9 @@ namespace LostAndFound.Controllers
                 StatusFilter = statusFilter,
                 CityFilter = cityFilter,
                 DateFrom = dateFrom,
-                DateTo = dateTo
+                DateTo = dateTo,
+                SortOrder = sortOrder
+
             };
 
             return View(itemService.Browse(filter));
@@ -32,12 +34,19 @@ namespace LostAndFound.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var item = itemService.GetItemDetails(id);
+
             if (item == null)
                 return NotFound();
 
+            var vm = new ItemDetailsViewModel
+            {
+                Item = item,
+                SimilarItems = itemService.GetSimilarItems(id)
+            };
+
             ViewBag.AlreadyClaimed = await itemService.IsAlreadyClaimedByCurrentUserAsync(id, User);
 
-            return View(item);
+            return View(vm);
         }
 
         [Authorize]
@@ -62,6 +71,13 @@ namespace LostAndFound.Controllers
         [HttpPost]
         public IActionResult Create(ItemViewModel model)
         {
+
+            if (model.Status == ItemType.Lost)
+            {
+                ModelState.Remove("Questions[0].QuestionText");
+                ModelState.Remove("Questions[0].ExpectedAnswerHash");
+            }
+
             if (!ModelState.IsValid)
                 return View(model);
 

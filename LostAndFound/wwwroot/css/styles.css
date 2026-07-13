@@ -88,6 +88,7 @@ body {
   padding: 5rem 0 4rem;
   position: relative;
   overflow: hidden;
+  height:100vh;
 }
 
 .hero-section::before {
@@ -1091,7 +1092,6 @@ input[type="radio"] {
   border-radius: var(--radius);
   padding: 1.5rem;
 }
-
 
 .info-card {
     background: #f8fafc;

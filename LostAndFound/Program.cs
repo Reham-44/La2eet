@@ -52,6 +52,7 @@ builder.Services.AddScoped<ChatRepository>();
 builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<ItemRepository>();
 builder.Services.AddScoped<ItemService>();
+builder.Services.AddScoped<AdminRepository>();
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
     {

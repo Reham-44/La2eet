@@ -1,10 +1,16 @@
-﻿namespace LostAndFound.Enums
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LostAndFound.Enums
 {
     public enum ItemType
         {
+        [Display(Name = "مفقود")]
+        Lost,
+        [Display(Name = "وُجد")]
 
-            Lost ,
-            Found ,
-            Returned
-        }   
+        Found,
+        [Display(Name = "رجع لصاحبه")]
+
+        Returned
+    }   
 }

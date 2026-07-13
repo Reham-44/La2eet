@@ -3,49 +3,105 @@
     Layout = "~/Views/Shared/_AuthLayout.cshtml";
     var item = ViewBag.Item as LostAndFound.Models.Item;
 }
+<div class="browse-header">
+    <div class="container text-center">
+        <h1 class="fw-bold">
+            <i class="fas fa-hand-holding me-2"></i>
+            تقديم مطالبة
+        </h1>
 
-    <div class="container py-5" style="max-width:600px;">
-        <h2 class="mb-4"><i class="fas fa-hand-holding me-2"></i>مطالبة بالغرض: @item?.Title</h2>
-        <p class="text-muted mb-4">جاوب على أسئلة التحقق دي عشان تثبت إنك فعلاً صاحب الغرض.</p>
-
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger">@ViewBag.Error</div>
-        }
-
-        <form method="post" asp-controller="Claims" asp-action="Create">
-            <input type="hidden" name="itemId" value="@item?.ItemId" />
-
-        @if (item?.VerificationQuestions != null && item.VerificationQuestions.Any())
-        {
-            int i = 1;
-            foreach (var q in item.VerificationQuestions)
-            {
-                <div class="mb-3">
-                    <label class="form-label fw-bold">
-                        سؤال @i: @q.QuestionText
-                    </label>
-
-                    <input type="text"
-                           name="answer_@q.QId"
-                           class="form-control"
-                           required />
-
-                </div>
-
-                i++;
-            }
-        }
-        else
-        {
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                لا توجد أسئلة تحقق لهذا البلاغ، سيتم إرسال مطالبتك مباشرة إلى صاحب البلاغ.
-            </div>
-        }
-
-            <button type="submit" class="btn btn-primary w-100">إرسال المطالبة</button>
-            <a asp-controller="Items" asp-action="Details" asp-route-id="@item?.ItemId" class="btn btn-outline-secondary w-100 mt-2">إلغاء</a>
-        </form>
+        <p class="text-white-50 mb-0">
+            أجب عن أسئلة التحقق لإثبات ملكيتك للغرض.
+        </p>
     </div>
+</div>
 
+<div class="container py-5" style="max-width:900px;">
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger rounded-4 mb-4">
+            @ViewBag.Error
+        </div>
+    }
+
+    <form method="post"
+          asp-controller="Claims"
+          asp-action="Create">
+
+        <input type="hidden"
+               name="itemId"
+               value="@item?.ItemId" />
+
+        <div class="card border-0 shadow-sm rounded-4">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-4">
+                    <i class="fas fa-circle-question text-primary me-2"></i>
+                    أسئلة التحقق
+                </h4>
+
+                @if (item?.VerificationQuestions != null &&
+                                item.VerificationQuestions.Any())
+                {
+                    int i = 1;
+
+                    foreach (var q in item.VerificationQuestions)
+                    {
+                        <div class="question-card mb-4">
+
+                            <label class="fw-bold mb-3 d-block">
+
+                                <span class="question-number">
+                                    @i
+                                </span>
+
+                                @q.QuestionText
+
+                            </label>
+
+                            <input type="text"
+                                   class="form-control form-control-lg"
+                                   name="answer_@q.QId"
+                                   placeholder="اكتب إجابتك بوضوح"
+                                   required />
+
+                        </div>
+
+                        i++;
+                    }
+                }
+
+            </div>
+
+        </div>
+
+
+        <div class="d-grid gap-3 mt-4">
+
+            <button type="submit"
+                    class="btn btn-primary btn-lg rounded-pill">
+
+                <i class="fas fa-paper-plane me-2"></i>
+
+                إرسال المطالبة
+
+            </button>
+
+            <a asp-controller="Items"
+               asp-action="Details"
+               asp-route-id="@item?.ItemId"
+               class="btn btn-outline-secondary rounded-pill">
+
+                <i class="fas fa-arrow-right me-2"></i>
+
+                إلغاء
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
