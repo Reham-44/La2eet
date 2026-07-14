@@ -5,20 +5,32 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
-
+using LostAndFound.Services;
 namespace LostAndFound.Controllers
 {
     public class AuthController : Controller
     {
+        //   private readonly UserManager<User> _userManager;
+        // private readonly SignInManager<User> _signInManager;
+
+        // public AuthController(UserManager<User> userManager, SignInManager<User> signInManager)
+        // {
+        //    _userManager = userManager;
+        //  _signInManager = signInManager;
+        //  }
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IEmailService _emailService;
 
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AuthController(
+            UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
         }
-
         // GET: /Auth/Login
         [HttpGet]
         public IActionResult Login()
@@ -33,8 +45,12 @@ namespace LostAndFound.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // اتأكد الأول إن الحساب مش محظور قبل ما نحاول نعمله Sign In
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null && !existingUser.EmailConfirmed)
+            {
+                ModelState.AddModelError("", "من فضلك أكّد البريد الإلكتروني الأول");
+                return View(model);
+            }
             if (existingUser != null && existingUser.IsBanned)
             {
                 ModelState.AddModelError(string.Empty, "تم حظر هذا الحساب، تواصل مع الدعم لمزيد من التفاصيل");
@@ -50,7 +66,6 @@ namespace LostAndFound.Controllers
                 return View(model);
             }
 
-            // نجيب اليوزر عشان نعرف الـ Role بتاعه ونوجهه صح
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user != null && user.Role == Role.ADMIN)
@@ -74,17 +89,16 @@ namespace LostAndFound.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
-
             var user = new User
             {
                 UserName = model.Email,
                 Email = model.Email,
                 FullName = model.FullName,
                 Phone = model.Phone,
+                EmailConfirmed = false,
                 IsVerified = false,
-                Role = Role.USER // أي حساب بيتعمل من صفحة التسجيل العادية بيبقى USER دايمًا
+                Role = Role.USER 
             };
-
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
@@ -95,13 +109,41 @@ namespace LostAndFound.Controllers
                 return View(model);
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
 
-            return RedirectToAction("Index", "Home");
+
+
+
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var confirmationLink = Url.Action(
+                "ConfirmEmail",
+                "Auth",
+                new
+                {
+                    userId = user.Id,
+                    token = token
+                },
+                Request.Scheme);
+
+
+            await _emailService.SendEmailAsync(
+                user.Email,
+                "تأكيد البريد الإلكتروني",
+                $@"
+    <h2>Lost & Found</h2>
+    <p>اضغط على الرابط التالي لتأكيد بريدك الإلكتروني:</p>
+    <a href='{confirmationLink}'>تأكيد الحساب</a>
+    "
+            );
+
+            TempData["SuccessMessage"] = "تم إنشاء الحساب بنجاح. تم إرسال رابط تأكيد إلى بريدك الإلكتروني.";
+            return RedirectToAction("Login");
+            // return RedirectToAction("Login");
         }
 
-        // POST: /Auth/Logout
-        [HttpPost]
+            // POST: /Auth/Logout
+            [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -124,8 +166,6 @@ namespace LostAndFound.Controllers
 
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            // ملاحظة أمنية: منقولش "الإيميل مش موجود" عشان محدش يقدر يتأكد
-            // مين اليوزرز المسجلين عن طريق تجربة إيميلات عشوائية
             if (user == null)
             {
                 ViewBag.Message = "لو الإيميل ده مسجل عندنا، هيوصلك رابط إعادة تعيين كلمة المرور.";
@@ -137,8 +177,7 @@ namespace LostAndFound.Controllers
             var resetLink = Url.Action("ResetPassword", "Auth",
                 new { email = model.Email, token = token }, protocol: Request.Scheme);
 
-            // TODO: لما يبقى عندك خدمة إيميل حقيقية (SMTP/SendGrid)،
-            // ابعت resetLink بدل ما تعرضه على الشاشة، وامسح الـ ViewBag.ResetLink من View التأكيد
+
             ViewBag.ResetLink = resetLink;
 
             return View("ForgotPasswordConfirmation");
@@ -165,7 +204,6 @@ namespace LostAndFound.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                // منورّيش السبب الحقيقي، بس نوجهه كإنه نجح عشان أمان الحسابات
                 return RedirectToAction(nameof(ResetPasswordConfirmation));
             }
 
@@ -202,6 +240,37 @@ namespace LostAndFound.Controllers
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
+
+        [HttpGet]
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+                return RedirectToAction("Login");
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return RedirectToAction("Login");
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+
+            if (result.Succeeded)
+            {
+                user.IsVerified = true;
+
+                await _userManager.UpdateAsync(user);
+
+                TempData["SuccessMessage"] = "تم تأكيد البريد الإلكتروني بنجاح، يمكنك الآن تسجيل الدخول.";
+
+                return RedirectToAction("Login");
+            }
+
+            TempData["ErrorMessage"] = "رابط تأكيد البريد الإلكتروني غير صالح أو انتهت صلاحيته.";
+
+            return RedirectToAction("Login");
+        }
+
         [HttpGet]
         public async Task<IActionResult> GoogleResponse()
         {
@@ -210,7 +279,7 @@ namespace LostAndFound.Controllers
             if (info == null)
                 return RedirectToAction(nameof(Login));
 
-            // لو الحساب مربوط بجوجل بالفعل
+            
             var result = await _signInManager.ExternalLoginSignInAsync(
                 info.LoginProvider,
                 info.ProviderKey,
@@ -219,7 +288,6 @@ namespace LostAndFound.Controllers
             if (result.Succeeded)
                 return RedirectToAction("Index", "Home");
 
-            // أول مرة يسجل بجوجل
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
 
             if (email == null)
@@ -233,6 +301,7 @@ namespace LostAndFound.Controllers
                 {
                     UserName = email,
                     Email = email,
+                    EmailConfirmed = true,
                     FullName = info.Principal.FindFirstValue(ClaimTypes.Name) ?? "",
                     Role = Role.USER,
                     IsVerified = true
@@ -244,18 +313,11 @@ namespace LostAndFound.Controllers
                     return RedirectToAction(nameof(Login));
             }
 
-            // اربط حساب جوجل بالحساب
             await _userManager.AddLoginAsync(user, info);
 
-            // اعمل Login
             await _signInManager.SignInAsync(user, false);
 
             return RedirectToAction("Index", "Home");
         }
-
-
-
-
-
     }
 }

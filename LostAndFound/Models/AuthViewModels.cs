@@ -25,11 +25,14 @@ namespace LostAndFound.Models
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "رقم الهاتف مطلوب")]
+        [RegularExpression(@"^01[0125]\d{8}$", ErrorMessage = "رقم الهاتف يجب أن يكون رقم مصري صحيح مكون من 11 رقم")]
         public string Phone { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "كلمة المرور مطلوبة")]
         [DataType(DataType.Password)]
-        [MinLength(6, ErrorMessage = "كلمة المرور لازم تكون 6 أحرف على الأقل")]
+        [RegularExpression(
+        @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_\-+=])[A-Za-z\d@$!%*?&#^()_\-+=]{8,}$",
+        ErrorMessage = "كلمة المرور يجب أن تكون 8 أحرف على الأقل وتحتوي على حرف كبير وحرف صغير ورقم ورمز خاص")]
         public string Password { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "تأكيد كلمة المرور مطلوب")]

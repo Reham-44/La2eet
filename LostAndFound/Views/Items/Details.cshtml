@@ -59,9 +59,10 @@
                     <div class="info-row"><span class="label"><i class="fas fa-location-arrow me-1"></i> الموقع</span><span class="value">@Model.Item.Location</span></div>
                     <div class="info-row"><span class="label"><i class="fas fa-calendar me-1"></i> التاريخ</span><span class="value">@Model.Item.LostOrFoundDate.ToString("dd MMMM yyyy", new CultureInfo("ar-EG"))</span></div>
                     <div class="info-row"><span class="label"><i class="fas fa-user me-1"></i> نشر بواسطة</span><span class="value">@Model.Item.User.FullName</span></div>
-                    @if (User.IsInRole("Admin") && Model.Item.User != null)
-                    {
-                        @if (Model.Item.User.IsBanned)
+                      @if(User.IsInRole("Admin") && Model.Item.User != null)
+                      {
+
+                        @if (Model.Item.User != null && Model.Item.User.IsBanned)
                         {
                             <form asp-controller="Admin" asp-action="BanUser" method="post" class="d-inline" onsubmit="return confirm('هل أنت متأكد من فك الحظر عن هذا المستخدم؟');">
                                 <input type="hidden" name="userId" value="@Model.Item.UserId" />

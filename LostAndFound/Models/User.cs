@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace LostAndFound.Models
 {
-    // Email, UserName, PasswordHash, PhoneNumber, EmailConfirmed, ...
     public class User : IdentityUser<int>
     {
         public string FullName { get; set; } = string.Empty;
