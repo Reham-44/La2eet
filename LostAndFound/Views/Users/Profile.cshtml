@@ -7,7 +7,6 @@
 <section class="py-5">
     <div class="container">
 
-        <!-- بيانات المستخدم -->
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center gap-3 flex-wrap">
@@ -36,6 +35,8 @@
                             <a asp-controller="Users" asp-action="Edit" class="btn btn-outline-warning btn-sm">
                                 <i class="fas fa-user-edit me-1"></i>تعديل بياناتي
                             </a>
+
+                          
                         </div>
 
                     </div>
@@ -60,7 +61,6 @@
             </div>
         </div>
 
-        <!-- بلاغاتي -->
         <div class="section-header d-flex justify-content-between align-items-start flex-wrap gap-2">
             <div>
                 <h2>بلاغاتي</h2>
@@ -106,9 +106,18 @@
                                         <span><i class="fas fa-calendar"></i>@item.CreatedAt.ToString("dd MMM yyyy")</span>
                                     </div>
                                     <div class="mt-2">
-                                        <span class="badge @(item.IsResolved ? "bg-success" : "bg-secondary")">
-                                            @(item.IsResolved ? "تم الحل" : "لسه مفتوح")
-                                        </span>
+                                        @switch (item.ReportStatus)
+                                        {
+                                            case ReportStatus.Pending:
+                                                <span class="badge bg-warning text-dark">قيد المراجعة</span>
+                                                break;
+                                            case ReportStatus.Approved:
+                                                <span class="badge bg-success">مقبول</span>
+                                                break;
+                                            case ReportStatus.Rejected:
+                                                <span class="badge bg-danger">مرفوض</span>
+                                                break;
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -118,7 +127,6 @@
             </div>
         }
 
-        <!-- مطالباتي -->
         <div class="section-header d-flex justify-content-between align-items-start flex-wrap gap-2">
             <div>
                 <h2>مطالباتي</h2>

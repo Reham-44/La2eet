@@ -1,0 +1,42 @@
+﻿@model LostAndFound.Models.ProfileViewModel
+@using LostAndFound.Enums
+
+<section class="py-5">
+    <div class="container">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-1">عرض إداري: @Model.FullName</h3>
+                    <p class="text-muted mb-0">البريد الإلكتروني: @Model.Email</p>
+                </div>
+
+                <form asp-controller="Admin" asp-action="BanUser" method="post"
+                      onsubmit="return confirm('هل أنت متأكد من تغيير حالة الحظر لهذا المستخدم؟');">
+                    <input type="hidden" name="userId" value="@Model.UserId" />
+                    <button type="submit" class="btn @(Model.IsBanned ? "btn-success" : "btn-danger")">
+                        <i class="fas @(Model.IsBanned ? "fa-user-check" : "fa-ban") me-1"></i>
+                        @(Model.IsBanned ? "فك الحظر" : "حظر المستخدم")
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        @if (Model.Items.Any())
+        {
+            <h4 class="mb-3">بلاغات المستخدم</h4>
+            <div class="row g-3">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="col-md-4">
+                        <div class="card h-100 p-3">
+                            <h6>@item.Title</h6>
+                            <span class="badge @(item.ReportStatus == ReportStatus.Approved ? "bg-success" : "bg-warning")">
+                                @item.ReportStatus
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>

@@ -91,6 +91,7 @@ namespace LostAndFound.Controllers
                 ModelState.AddModelError("", result.ErrorMessage!);
                 return View(model);
             }
+            TempData["Message"] = "تم إرسال بلاغك بنجاح! سيتم مراجعته من قبل الإدارة وسيظهر للعامة قريباً.";
 
             return RedirectToAction(nameof(Browse));
         }
