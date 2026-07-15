@@ -363,4 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Ignore app settings
-LostAndFound/appsettings.json
+LostAndFound/appsettings.json
+LostAndFound/appsettings.Development.json

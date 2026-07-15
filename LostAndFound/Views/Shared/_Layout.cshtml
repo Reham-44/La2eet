@@ -42,7 +42,7 @@
                 <div class="d-flex align-items-center gap-2">
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
-                        <a href="@Url.Action("Profile", "Users")" class="btn btn-outline-light btn-sm">
+                        <a href="@Url.Action("Profile", "Users", new { id = "" })" class="btn btn-outline-light btn-sm">
                             <i class="fas fa-user me-1"></i> @User.Identity.Name
                         </a>
                         <a href="@Url.Action("Create", "Items")" class="btn btn-post"><i class="fas fa-plus me-1"></i> أضف بلاغ</a>
@@ -67,7 +67,7 @@
     </nav>
     @if (TempData["Message"] != null)
     {
-        <div class="alert alert-info alert-dismissible fade show mb-0" role="alert">
+        <div class="alert alert-info alert-dismissible fade show" role="alert" style="margin-top: 10px;">
             @TempData["Message"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>

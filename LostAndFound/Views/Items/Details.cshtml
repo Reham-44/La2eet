@@ -61,8 +61,9 @@
                     <div class="info-row">
                         <span class="label"><i class="fas fa-user me-1"></i> نشر بواسطة</span>
                         <span class="value">
-                            @Model.Item.User.FullName
-                        </span>
+                            <a asp-controller="Users" asp-action="Profile" asp-route-id="@Model.Item.UserId" class="text-decoration-none">
+                                @Model.Item.User.FullName
+                            </a>
                     </div>                      @if (User.IsInRole("Admin") && Model.Item.User != null)
                       {
 
