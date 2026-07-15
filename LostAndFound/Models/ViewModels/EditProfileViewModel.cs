@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LostAndFound.Models
+namespace LostAndFound.Models.ViewModels
 {
     public class EditProfileViewModel
     {

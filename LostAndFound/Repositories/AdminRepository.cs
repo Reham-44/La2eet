@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using LostAndFound.DbContexts;
+﻿using LostAndFound.DbContexts;
 using LostAndFound.Enums;
+using LostAndFound.Extensions;
 using LostAndFound.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LostAndFound.Repositories
 {
@@ -38,18 +39,18 @@ namespace LostAndFound.Repositories
            .Take(count)
            .ToList();
         }
-
         public Dictionary<string, int> GetCitySummary(int count)
         {
             return context.Items
                    .GroupBy(i => i.City)
-                   .Select(g => new { CityName = g.Key.ToString(), Count = g.Count() })
+                   .Select(g => new { CityName = g.Key, Count = g.Count() })
+                   .AsEnumerable()
                    .OrderByDescending(x => x.Count)
                    .Take(count)
-                   .ToDictionary(k => k.CityName, v => v.Count);
+                   .ToDictionary(k => k.CityName.GetDisplayName(), v => v.Count);
         }
 
-        
+
         public Item? GetItemById(int id) => context.Items.Find(id);
 
         public User? GetUserById(int id) => context.Users.Find(id);

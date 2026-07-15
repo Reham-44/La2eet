@@ -1,4 +1,4 @@
-﻿@model LostAndFound.Models.ProfileViewModel
+﻿@model LostAndFound.Models.ViewModels.ProfileViewModel
 @using LostAndFound.Enums
 
 <section class="py-5">
@@ -31,7 +31,7 @@
                         <div class="card h-100 p-3">
                             <h6>@item.Title</h6>
                             <span class="badge @(item.ReportStatus == ReportStatus.Approved ? "bg-success" : "bg-warning")">
-                                @item.ReportStatus
+                                @item.ReportStatus.GetDisplayName()
                             </span>
                         </div>
                     </div>

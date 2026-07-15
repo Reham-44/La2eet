@@ -48,10 +48,11 @@ namespace LostAndFound.Repositories
         }
         public List<Item> GetSimilarItems(Item currentItem, int count = 3)
         {
-            var words = currentItem.Title
-    .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-    .Select(w => w.ToLower())
-    .ToList();
+            var words = $"{currentItem.Title} {currentItem.Description}"
+      .ToLower()
+      .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+      .Distinct()
+      .ToList();
 
             return context.Items
                     .Include(i => i.User)
@@ -60,9 +61,10 @@ namespace LostAndFound.Repositories
         i.ItemId != currentItem.ItemId &&
         i.ReportStatus == ReportStatus.Approved &&
         !i.User.IsBanned &&
-        i.Status != currentItem.Status &&
-        i.City == currentItem.City &&
-        words.Any(word => i.Title.ToLower().Contains(word)))
+      i.City == currentItem.City &&
+        words.Any(word =>
+    i.Title.ToLower().Contains(word) ||
+    i.Description.ToLower().Contains(word)))
     .Take(count)
     .ToList();
         }

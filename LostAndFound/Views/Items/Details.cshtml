@@ -49,7 +49,7 @@
                     <div class="d-flex justify-content-between  align-items-start flex-wrap gap-2 mb-3">
                         <h3 class="fw-bold mb-0">@Model.Item.Title</h3>
 
-                        <span class="px-3 py-2 badge @(Model.Item.Status == ItemType.Lost ? "bg-danger" : (Model.Item.Status == ItemType.Lost) ? "bg-success" : "bg-primary bg-opacity-75")">
+                        <span class="px-3 py-2 badge @(Model.Item.Status == ItemType.Lost ? "bg-danger" : (Model.Item.Status == ItemType.Found) ? "bg-primary bg-opacity-75" : "bg-success")">
                             @Model.Item.Status.GetDisplayName()
                         </span>
                     </div>
@@ -61,9 +61,7 @@
                     <div class="info-row">
                         <span class="label"><i class="fas fa-user me-1"></i> نشر بواسطة</span>
                         <span class="value">
-                            <a asp-controller="Users" asp-action="Profile" asp-route-id="@Model.Item.UserId" class="text-decoration-none">
-                                @Model.Item.User.FullName
-                            </a>
+                            @Model.Item.User.FullName
                         </span>
                     </div>                      @if (User.IsInRole("Admin") && Model.Item.User != null)
                       {
@@ -116,10 +114,7 @@
                             تم استرجاع الغرض
                         </button>
                     }
-                    else
-                    {
-                        
-                                @if (isOwner)
+                    else if (isOwner)
                     {
                         <div class="alert alert-info small mb-2">
                             <i class="fas fa-info-circle me-1"></i> ده البلاغ بتاعك، هتشوف المطالبات الواردة عليه من صفحة "مطالباتي".
@@ -128,59 +123,56 @@
                             <i class="fas fa-inbox me-2"></i>عرض المطالبات الواردة
                         </a>
                     }
-                    else{
-                    if (Model.Item.Status == ItemType.Found)
+                    else
                     {
-                     
-                         if (alreadyClaimed)
+                        if (Model.Item.Status == ItemType.Found)
                         {
-                            <button class="btn btn-secondary w-100 mb-2 btn-lg" disabled>
-                                <i class="fas fa-check me-2"></i>
-                                تم إرسال مطالبتك بالفعل
-                            </button>
-                        }
-                        else
-                        {
-                            <a asp-controller="Claims"
-                               asp-action="Create"
-                               asp-route-itemId="@Model.Item.ItemId"
-                               class="btn btn-primary w-100 mb-2 btn-lg">
-                                <i class="fas fa-hand-holding me-2"></i>
-                                المطالبة بالغرض
-                            </a>
-                            <a asp-controller="Items" asp-action="Browse" class="btn btn-outline-secondary w-100"><i class="fas fa-list me-2"></i>عرض مشابهة</a>
-                                    <div class="safety-tip mb-2">
-                                        <i class="fas fa-shield-alt"></i>
-                                        <div>المطالبة هتتراجع من قبل صاحب البلاغ عشان يتأكد إنك فعلاً صاحب الغرض.</div>
-                                    </div>
-                        }
 
-                    }
-                    else if (Model.Item.Status == ItemType.Lost)
-                    {
-                                <a asp-controller="Messages"
-                                   asp-action="Index"
-                                   asp-route-itemId="@Model.Item.ItemId"
-                                   asp-route-receiverId="@Model.Item.UserId"
-                                   class="btn btn-success w-100 mb-2 btn-lg">
-                                    <i class="fas fa-comments me-2"></i>تواصل مع الفاقد
+                            if (alreadyClaimed)
+                            {
+                                <button class="btn btn-secondary w-100 mb-2 btn-lg" disabled>
+                                    <i class="fas fa-check me-2"></i>
+                                    تم إرسال مطالبتك بالفعل
+                                </button>
+
+                            }
+                            else
+                            {
+                                <a asp-controller="Claims"
+                                asp-action="Create"
+                                asp-route-itemId="@Model.Item.ItemId"
+                                class="btn btn-primary w-100 mb-2 btn-lg">
+                                    <i class="fas fa-hand-holding me-2"></i>
+                                    المطالبة بالغرض
                                 </a>
-                                <a asp-controller="Items" asp-action="Browse" class="btn btn-outline-secondary w-100"><i class="fas fa-list me-2"></i>عرض مشابهة</a>
-                    }
-                    }
+                                <div class="safety-tip mb-2">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <div>المطالبة هتتراجع من قبل صاحب البلاغ عشان يتأكد إنك فعلاً صاحب الغرض.</div>
+                                </div>
+                            }
 
+                        }
+                        else if (Model.Item.Status == ItemType.Lost)
+                        {
+                            <a asp-controller="Messages"
+                            asp-action="Index"
+                            asp-route-itemId="@Model.Item.ItemId"
+                            asp-route-receiverId="@Model.Item.UserId"
+                            class="btn btn-success w-100 mb-2 btn-lg">
+                                <i class="fas fa-comments me-2"></i>بدء المحادثة 
+                            </a>
+                        }
+                        <a asp-controller="Items" asp-action="Browse" class="btn btn-outline-secondary w-100"><i class="fas fa-list me-2"></i>عرض مشابهة</a>
                     }
-                   
-
                 </div>
 
                 <div class="detail-card">
                     <h5><i class="fas fa-shield-alt me-2 text-success"></i>نصائح السلامة</h5>
                     <ul class="list-unstyled small" style="color:var(--gray)">
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>التقِ في مكان عام ومضاء</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>أخذ معك شخص تاني</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>تحقق من هوية الشخص</li>
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>بلّغ عن أي سلوك مشبوه</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> التقِ في مكان عام ومضاء </li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> أخذ معك شخص تاني </li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> تحقق من هوية الشخص</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>بلّغ عن أي سلوك مشبوه </li>
                     </ul>
                 </div>
                 <a asp-controller="Items"
@@ -222,8 +214,8 @@
                                             <div class="small text-muted">@item.City.GetDisplayName()</div>
 
                                             <span class="badge @(item.Status == ItemType.Lost ? "bg-danger" :
-                                                                                               item.Status == ItemType.Found ? "bg-success" :
-                                                                                               "bg-primary bg-opacity-75")">
+                                                                                               item.Status == ItemType.Found ? "bg-primary bg-opacity-75" :
+                                                                                               "bg-success")">
                                                 @item.Status.GetDisplayName()
                                             </span>
                                         </div>

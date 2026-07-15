@@ -1,4 +1,5 @@
-@model LostAndFound.Models.AdminDashboardViewModel
+@using System.Globalization
+@model LostAndFound.Models.ViewModels.AdminDashboardViewModel
 @{
     Layout = null;
     ViewData["Title"] = "لوحة الإدارة";
@@ -281,7 +282,7 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>@item.City.ToString()</td>
+                                                <td>@item.City.GetDisplayName()</td>
                                                 <td>
                                                     @if (item.Status.ToString() == "Found")
                                                     {
@@ -292,7 +293,7 @@
                                                         <span class="badge bg-danger rounded-pill">مفقود</span>
                                                     }
                                                 </td>
-                                                <td class="text-muted">@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                                <td class="text-muted">@item.CreatedAt.ToString("dd MMMM yyyy", new CultureInfo("ar-EG"))</td>
                                                 <td>
                                                     <div class="d-flex align-items-center gap-1">
                                                         <a href="@Url.Action("Details","Items",new {id=item.ItemId})" class="btn btn-sm btn-outline-primary btn-view">عرض</a>
@@ -353,8 +354,8 @@
                                         {
                                             <tr>
                                                 <td class="fw-bold">@item.Title</td>
-                                                <td>@item.City.ToString()</td>
-                                                <td class="text-muted">@item.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                                <td>@item.City.GetDisplayName()</td>
+                                                <td class="text-muted">@item.CreatedAt.ToString("dd MMMM yyyy", new CultureInfo("ar-EG"))</td>
                                                 <td>
                                                     <span class="badge bg-success rounded-pill"><i class="fas fa-check me-1"></i>تم التسليم</span>
                                                 </td>
@@ -391,7 +392,7 @@
                             {
                                 <div class="city-row">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <span class="fw-bold text-secondary"><i class="fas fa-city me-2"></i>@city.Key</span>
+                                        <span class="fw-bold text-secondary"><i class="fas fa-city me-2"></i>  @city.Key</span>
                                         <span class="badge bg-primary rounded-pill">@city.Value</span>
                                     </div>
                                     <div class="city-progress">

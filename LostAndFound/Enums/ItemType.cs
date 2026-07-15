@@ -6,11 +6,11 @@ namespace LostAndFound.Enums
         {
         [Display(Name = "مفقود")]
         Lost,
-        [Display(Name = "وُجد")]
 
+        [Display(Name = "موجود")]
         Found,
-        [Display(Name = "رجع لصاحبه")]
 
+        [Display(Name = "رجعت لصاحبها")]
         Returned
     }   
 }

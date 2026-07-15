@@ -1,8 +1,7 @@
-﻿using LostAndFound.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace LostAndFound.Models
+namespace LostAndFound.Models.ViewModels
 {
     public class ProfileViewModel
     {

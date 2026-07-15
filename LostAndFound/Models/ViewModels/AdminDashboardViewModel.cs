@@ -1,4 +1,4 @@
-﻿namespace LostAndFound.Models
+﻿namespace LostAndFound.Models.ViewModels
 {
    
         public class AdminDashboardViewModel

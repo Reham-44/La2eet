@@ -1,5 +1,4 @@
 @using LostAndFound.Models.ViewModels
-<!-- Messages View - Placeholder -->
 @model ChatPageVM
 @{
     ViewData["Title"] = "الرسائل";
@@ -37,7 +36,7 @@
                         </div>
 
                         <div class="chat-info">
-                            <div class="chat-name"></div>
+                            <div  class="chat-name"></div>
                             <div class="chat-item"></div>
                         </div>
 
@@ -54,15 +53,16 @@
                            placeholder="اكتب رسالتك..."
                            autocomplete="off" />
 
+   
+                    <button class="btn btn-primary send-btn" type="submit">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+
                     <button type="button"
                             class="btn btn-outline-success"
                             id="btnReturned">
                         <i class="fas fa-check-circle"></i>
                         رجعت لصاحبها
-                    </button>
-
-                    <button class="btn btn-primary send-btn" type="submit">
-                        <i class="fas fa-paper-plane"></i>
                     </button>
 
                     </form>
@@ -169,7 +169,7 @@
             <div class="conv-item ${activeConversation === conversations[index] ? "active" : ""}"
                  onclick="selectConversation(${index})">
 
-                <i class="conv-avatar fas fa-image"></i>
+                <i class="conv-avatar fas fa-user"></i>
 
                 <div style="min-width:0">
 
@@ -182,10 +182,6 @@
                     </div>
 
                 </div>
-
-                <span class="conv-time">
-                    ${escapeHtml(c.lastMessageTimeText)}
-                </span>
 
             </div>
 
@@ -269,11 +265,12 @@
                         ${escapeHtml(activeConversation.otherUserName)}
                     </div>
 
-                    <div class="chat-item">
-                        ${escapeHtml(activeConversation.itemTitle)}
-                    </div>
-
-                </div>
+                        <a href="/Items/Details/${activeConversation.itemId}"
+               class="chat-item link-offset-2 link-underline link-underline-opacity-0">
+                   <i class="fas fa-box-open"></i>
+                ${escapeHtml(activeConversation.itemTitle)}
+            </a>
+            </div>
 
             </div>
 
@@ -454,322 +451,4 @@
 
 
             </script>
-
-  @*   <script>
-        const currentUserId = @Model.CurrentUserId;
-
-        const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/chatHub")
-        .build();        
-    
-    connection.start()
-        .then(() => console.log("SignalR Connected"))
-    .catch(err => {
-        console.error(err);
-    });
-
-    let conversations = @Html.Raw(Json.Serialize(Model.Chats));
-
-    let activeConversation = conversations.length > 0
-        ? conversations[0]
-        : null;
-
-           
-            connection.on("ReceiveMessage", function (senderId, receiverId, itemId, message) {
-                if(activeConversation == null)
-    return;
-          if (
-        itemId != activeConversation.itemId ||
-        (
-            senderId != activeConversation.otherUserId &&
-            receiverId != activeConversation.otherUserId
-        )
-    )
-        return;
-            const conv = conversations.find(c =>
-        c.itemId == itemId &&
-        c.otherUserId == (senderId == currentUserId ? receiverId : senderId)
-    );
-
-    if (!conv)
-        return;
-
-    conv.messages.push({
-        senderId,
-        content: message,
-        sentAt: new Date().toISOString(),
-        sentTime:"الآن"
-    });
-
-      if (
-        activeConversation &&
-        activeConversation.itemId === conv.itemId &&
-        activeConversation.otherUserId === conv.otherUserId
-    )
-    {
-        renderMessages();
-    }
-
-    });
-           connection.on("ChatClosed", function (itemId) {
-
-        const conv = conversations.find(c => c.itemId == itemId);
-
-        if (!conv)
-            return;
-
-        conv.isClosed = true;
-
-        if (activeConversation === conv)
-            renderMessages();
-    });
-       
-
-        function renderConversations() {
-          const list = document.getElementById('conversationList');
-          list.innerHTML = '<div class="msg-sidebar-header"><i class="fas fa-shield-alt me-2 text-primary"></i>محادثات موثقة</div>' + conversations.map((c,index)=>`
-    <div class="conv-item ${index===conversations.indexOf(activeConversation)?'active':''}"
-         onclick="selectConversation(${index})">
-         <i class="conv-avatar fas fa-image"></i>
-    <div style="min-width:0">
-    <div class="conv-name">
-        ${escapeHtml(c.otherUserName)}
-    </div>
-        <div class="conv-preview">
-        ${escapeHtml(c.lastMessage ?? "")}
-    </div>
-              </div>
-                  <span class="conv-time">${escapeHtml(c.lastMessageTimeText)}</span>
-            </div>
-          `).join('');
-        };
-
-        function renderMessages() {
-                let html = "";
-
-    let lastDate = "";
-
-    activeConversation.messages.forEach(m => {
-
-        const label = getDateLabel(m.sentAt);
-
-        if(label !== lastDate){
-
-            html += `
-            <div class="date-divider">
-                ${label}
-            </div>
-            `;
-
-            lastDate = label;
-        }
-
-        html += `
-            <div class="bubble ${m.senderId==currentUserId?"me":"other"}">
-
-                ${escapeHtml(m.content)}
-
-                <div class="bubble-time">
-                    ${escapeHtml(m.sentTime)}
-                </div>
-
-            </div>
-        `;
-
-    });
-
-    document.getElementById("messageBody").innerHTML = html;
-
-        if (!activeConversation)
-            return;
-    if (activeConversation.isClosed) {
-
-        document.getElementById("messageBody").innerHTML += `
-            <div class="text-center mt-4">
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle me-2"></i>
-                    تم إنهاء هذه المحادثة بعد استلام المفقود.
-                </div>
-            </div>
-        `;
-    }
-    document.getElementById("conversationList").style.display="block";
-            document.getElementById("messageForm").style.display = "flex";
-            document.getElementById("chatHeader").style.display = "flex";
-
-    document.getElementById("chatHeader").innerHTML = `
-
-    <div class="chat-user">
-
-        <div class="chat-avatar">
-            <i class="fas fa-user"></i>
-        </div>
-
-        <div class="chat-info">
-
-    <div class="chat-name">
-        ${escapeHtml(activeConversation.otherUserName)}
-            </div>
-
-            <div class="chat-item">
-                ${escapeHtml(activeConversation.itemTitle)}
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="chat-actions">
-
-        <span class="verified-badge">
-
-            <i class="fas fa-check-circle"></i>
-
-            مطالبة موثقة
-
-        </span>
-
-    </div>
-
-    `;
-
-              const input = document.getElementById("messageInput");
-    const sendBtn = document.querySelector(".send-btn");
-    const returnBtn = document.getElementById("btnReturned");
-    returnBtn.style.display = activeConversation.canMarkReturned ? "inline-flex" : "none";
-    if (activeConversation.isClosed) {
-
-        input.disabled = true;
-
-        sendBtn.disabled = true;
-
-    returnBtn.style.display = "none";
-
-        input.placeholder = "تم إنهاء المحادثة";
-
-    } else {
-
-        input.disabled = false;
-
-        sendBtn.disabled = false;
-
-        returnBtn.disabled = false;
-
-        input.placeholder = "اكتب رسالتك...";
-    }
-
-          const body = document.getElementById('messageBody');
-          body.scrollTop = body.scrollHeight;
-        }
-            function renderEmptyState() {
-
-        document.getElementById("messageBody").innerHTML = `
-            <div class="d-flex flex-column justify-content-center align-items-center h-100 text-center">
-
-                <i class="fas fa-comments fa-5x text-secondary mb-4"></i>
-
-                <h4>لا توجد محادثات حالياً</h4>
-
-                <p class="text-muted">
-                    يمكنك بدء محادثة من صفحة المطالبات المقبولة
-                </p>
-
-            </div>
-        `;
-                  document.getElementById('conversationList').style.display="none";
-
-        document.getElementById("messageForm").style.display = "none";
-                document.getElementById("chatHeader").style.display = "none";
-
-    }
-        function getDateLabel(date) {
-
-        const d = new Date(date);
-
-        const today = new Date();
-
-        const yesterday = new Date();
-
-        yesterday.setDate(today.getDate() - 1);
-
-        if (d.toDateString() === today.toDateString())
-            return "اليوم";
-
-        if (d.toDateString() === yesterday.toDateString())
-            return "أمس";
-
-        return d.toLocaleDateString("ar-EG");
-    }
-
-      function selectConversation(index)
-    {
-        activeConversation = conversations[index];
-
-        renderConversations();
-
-        renderMessages();
-    }
-
-
-        document.getElementById("btnReturned").addEventListener("click",function(){
-
-        if(!activeConversation)
-            return;
-
-        if(!confirm("هل تم تسليم الشيء لصاحبه؟"))
-            return;
-
-           fetch("/Messages/MarkAsReturned", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: "itemId=" + activeConversation.itemId
-    })
-
-        .then(r=>r.json())
-    .then(data => {
-
-        if (data.success) {
-
-            alert("تم إنهاء المحادثة بنجاح");
-
-            activeConversation.isClosed = true;
-
-            renderMessages();
-        }
-
-    });
-
-    });
-
-        document.getElementById('messageForm').addEventListener('submit', e => {
-          e.preventDefault();
-          const input = document.getElementById('messageInput');
-          const text = input.value.trim();
-          if (!text) return;
-          if (!activeConversation)
-    return;
-    connection.invoke(
-        "SendMessage",
-        currentUserId,
-        activeConversation.otherUserId,
-        activeConversation.itemId,
-        text
-    );
-    input.value="";
-        });
-    document.addEventListener("DOMContentLoaded", () => {
-
-        if(conversations.length===0)
-        {
-            renderEmptyState();
-            return;
-        }
-
-        renderConversations();
-
-        renderMessages();
-    });
-    </script> *@
 

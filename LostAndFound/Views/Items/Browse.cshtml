@@ -14,7 +14,6 @@
         </div>
     </div>
 </div>
-
 <section class="py-4">
     <div class="container">
         <div class="row g-4">
@@ -46,16 +45,17 @@
                                     <label class="form-check-label" for="sAll">الكل</label>
                                 </div>
                                 <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="statusFilter" id="sFound" value="Found" onchange="this.form.submit()" @(Context.Request.Query["statusFilter"] == "Found" ? "checked" : "") />
+                                    <label class="form-check-label" for="sFound"><span class="badge bg-primary bg-opacity-75 me-1">موجود</span></label>
+                                </div> 
+                                <div class="form-check">
                                     <input class="form-check-input" type="radio" name="statusFilter" id="sLost" value="Lost" onchange="this.form.submit()" @(Context.Request.Query["statusFilter"] == "Lost" ? "checked" : "") />
                                     <label class="form-check-label" for="sLost"><span class="badge bg-danger me-1">مفقود</span></label>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="statusFilter" id="sFound" value="Found" onchange="this.form.submit()" @(Context.Request.Query["statusFilter"] == "Found" ? "checked" : "") />
-                                    <label class="form-check-label" for="sFound"><span class="badge bg-success me-1">موجود</span></label>
-                                </div>
+                              
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="statusFilter" id="sReturned" value="Returned" onchange="this.form.submit()" @(Context.Request.Query["statusFilter"] == "Returned" ? "checked" : "") />
-                                    <label class="form-check-label" for="sReturned"><span class="badge bg-primary opacity-75 me-1">رجع لصاحبه</span></label>
+                                    <label class="form-check-label" for="sReturned"><span class="badge bg-success me-1">رجع لصاحبه</span></label>
                                 </div>
                             </div>
                         </div>
@@ -80,11 +80,11 @@
 
                         <div class="mb-3">
                             <label class="form-label" for="dateFrom">من تاريخ</label>
-                            <input type="date" name="dateFrom" class="form-control" id="dateFrom" value="@Context.Request.Query["dateFrom"]" onchange="this.form.submit()" />
+                            <input type="date" name="dateFrom" class="form-control" id="dateFrom" value="@Context.Request.Query["dateFrom"]" onblur="this.form.submit()" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="dateTo">إلى تاريخ</label>
-                            <input type="date" name="dateTo" class="form-control" id="dateTo" value="@Context.Request.Query["dateTo"]" onchange="this.form.submit()" />
+                            <input type="date" name="dateTo" class="form-control" id="dateTo" value="@Context.Request.Query["dateTo"]" onblur="this.form.submit()" />
                         </div>
 
                         <a href="@Url.Action("Browse", "Items")" class="btn btn-outline-secondary w-100 btn-sm"><i class="fas fa-redo me-1"></i> إعادة ضبط</a>
@@ -124,7 +124,7 @@
                         <div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
                             <div class="text-center text-muted">
                                 <i class="fas fa-search fa-2x mb-3 d-block"></i>
-                                <h5>لا توجد بلاغات مطابقة للبحث</h5>
+                                <h5>لا توجد بلاغات</h5>
                             </div>
                         </div>
                     }
@@ -154,7 +154,7 @@
                                             </div>
                                         }
 
-                                        <span class="badge @(item.Status == ItemType.Lost ? "bg-danger" : item.Status == ItemType.Found ? "bg-success" : "bg-primary bg-opacity-75") position-absolute top-0 end-0 m-2">
+                                            <span class="badge @(item.Status == ItemType.Lost ? "bg-danger" : item.Status == ItemType.Found ? "bg-primary bg-opacity-75" : "bg-success") position-absolute top-0 end-0 m-2">
                                             @item.Status.GetDisplayName()
                                         </span>
 
@@ -183,3 +183,28 @@
         </div>
     </div>
 </section>
+<script>
+    const dateInput = document.getElementById("LostOrFoundDate");
+    const dateError = document.getElementById("dateError");
+
+    function validateDate() {
+        if (!dateInput.value) {
+            dateError.textContent = "";
+            return true;
+        }
+
+        const selectedDate = new Date(dateInput.value);
+        const minDate = new Date("2000-01-01");
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+
+        if (selectedDate < minDate || selectedDate > today) {
+            dateError.textContent = "التاريخ يجب أن يكون بين 01/01/2000 واليوم";
+            return false;
+        }
+
+        dateError.textContent = "";
+        return true;
+    }
+
+    dateInput.addEventListener("blur", validateDate);</script>

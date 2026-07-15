@@ -1,4 +1,4 @@
-﻿@model LostAndFound.Models.EditProfileViewModel
+﻿@model LostAndFound.Models.ViewModels.EditProfileViewModel
 @{
     ViewData["Title"] = "تعديل بياناتي";
 }
@@ -38,3 +38,8 @@
     </div>
 </section>
 
+@section scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+}

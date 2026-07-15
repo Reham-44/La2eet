@@ -1,5 +1,6 @@
 using LostAndFound.DbContexts;
 using LostAndFound.Models;
+using LostAndFound.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,8 @@ namespace LostAndFound.Controllers
             var user = await _context.Users
                 .Include(u => u.Items)
                 .Include(u => u.Claims)
+                  .ThenInclude(c => c.Item)
+                  .AsSplitQuery()
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)

@@ -40,8 +40,7 @@ namespace LostAndFound.Repositories
                         .Where(i => i.ItemId == g.Key.ItemId)
                         .Select(i => i.Title)
                         .FirstOrDefault(),
-                    CanMarkReturned =
-    context.Items
+                    CanMarkReturned = context.Items
         .Where(i => i.ItemId == g.Key.ItemId)
         .Select(i =>
             (i.Status == Enums.ItemType.Lost && i.UserId == currentUserId)
@@ -71,6 +70,7 @@ namespace LostAndFound.Repositories
             })
             .ToList()
                 })
+               .OrderByDescending(c => c.LastMessageTime)
                 .ToList();
         }
 

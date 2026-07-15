@@ -6,18 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LostAndFound.Services;
+using LostAndFound.Models.ViewModels;
 namespace LostAndFound.Controllers
 {
     public class AuthController : Controller
     {
-        //   private readonly UserManager<User> _userManager;
-        // private readonly SignInManager<User> _signInManager;
-
-        // public AuthController(UserManager<User> userManager, SignInManager<User> signInManager)
-        // {
-        //    _userManager = userManager;
-        //  _signInManager = signInManager;
-        //  }
+    
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IEmailService _emailService;
@@ -31,14 +25,14 @@ namespace LostAndFound.Controllers
             _signInManager = signInManager;
             _emailService = emailService;
         }
-        // GET: /Auth/Login
+       [Route("Login")]
         [HttpGet]
         public IActionResult Login()
         {
             return View(new LoginViewModel());
         }
 
-        // POST: /Auth/Login
+        [Route("Login")]
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -76,14 +70,15 @@ namespace LostAndFound.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: /Auth/Register
+        [Route("Register")]
         [HttpGet]
         public IActionResult Register()
         {
             return View(new RegisterViewModel());
         }
 
-        // POST: /Auth/Register
+
+        [Route("Register")]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
@@ -109,11 +104,6 @@ namespace LostAndFound.Controllers
                 return View(model);
             }
 
-
-
-
-
-
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
             var confirmationLink = Url.Action(
@@ -131,33 +121,32 @@ namespace LostAndFound.Controllers
                 user.Email,
                 "تأكيد البريد الإلكتروني",
                 $@"
-    <h2>Lost & Found</h2>
+    <h2>La2eet</h2>
     <p>اضغط على الرابط التالي لتأكيد بريدك الإلكتروني:</p>
     <a href='{confirmationLink}'>تأكيد الحساب</a>
     "
             );
 
+
             TempData["SuccessMessage"] = "تم إنشاء الحساب بنجاح. تم إرسال رابط تأكيد إلى بريدك الإلكتروني.";
             return RedirectToAction("Login");
-            // return RedirectToAction("Login");
         }
 
-            // POST: /Auth/Logout
-            [HttpPost]
+        [Route("Logout")]
+        [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
-
-        // GET: /Auth/ForgotPassword
+        [Route("ForgotPassword")]
         [HttpGet]
         public IActionResult ForgotPassword()
         {
             return View(new ForgotPasswordViewModel());
         }
 
-        // POST: /Auth/ForgotPassword
+        [Route("ForgotPassword")]
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
@@ -183,51 +172,6 @@ namespace LostAndFound.Controllers
             return View("ForgotPasswordConfirmation");
         }
 
-        // GET: /Auth/ResetPassword
-        [HttpGet]
-        public IActionResult ResetPassword(string email, string token)
-        {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
-                return RedirectToAction(nameof(Login));
-
-            var model = new ResetPasswordViewModel { Email = email, Token = token };
-            return View(model);
-        }
-
-        // POST: /Auth/ResetPassword
-        [HttpPost]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                return RedirectToAction(nameof(ResetPasswordConfirmation));
-            }
-
-            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
-
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
-
-                return View(model);
-            }
-
-            return RedirectToAction(nameof(ResetPasswordConfirmation));
-        }
-
-        [HttpGet]
-        public IActionResult ResetPasswordConfirmation()
-        {
-            return View();
-        }
-
-
-
         [HttpGet]
         public IActionResult GoogleLogin()
         {
@@ -241,7 +185,6 @@ namespace LostAndFound.Controllers
         }
 
 
-        [HttpGet]
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
@@ -318,6 +261,13 @@ namespace LostAndFound.Controllers
             await _signInManager.SignInAsync(user, false);
 
             return RedirectToAction("Index", "Home");
+
+        }
+        [Route("AccessDenied")]
+
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

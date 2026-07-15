@@ -1,4 +1,5 @@
 @using LostAndFound.Models.ViewModels
+@using System.Globalization
 @model ClaimsIndexViewModel
 @{
     ViewData["Title"] = "المطالبات";
@@ -45,7 +46,7 @@
                                 }
                                 <div style="flex:1">
                                     <div class="fw-bold">@c.Item?.Title</div>
-                                    <div class="small text-muted">طلبت في @c.CreatedAt.ToString("yyyy-MM-dd")</div>
+                                <div class="small text-muted">طلبت في @c.CreatedAt.ToString("dd MMMM yyyy", new CultureInfo("ar-EG"))</div>
                                 </div>
                                 @{
                                     var (label, css) = c.ClaimStatus switch
@@ -99,7 +100,7 @@
                                 }
                                 <div style="flex:1">
                                     <div class="fw-bold">@c.User?.FullName طالب بـ "@c.Item?.Title"</div>
-                                    <div class="small text-muted"><i class="fas fa-phone me-1"></i>@c.User?.Phone | @c.CreatedAt.ToString("yyyy-MM-dd")</div>
+                                <div class="small text-muted"> @c.CreatedAt.ToString("dd MMMM yyyy", new CultureInfo("ar-EG"))</div>
                                 </div>
 
                                 @if (c.ClaimStatus == LostAndFound.Enums.ClaimStatus.Pending)

@@ -1,11 +1,11 @@
-using LostAndFound.Repositories;
-using LostAndFound.DbContexts;
+using ClosedXML.Excel;
 using LostAndFound.Enums;
-using LostAndFound.Models;
+using LostAndFound.Extensions;
+using LostAndFound.Models.ViewModels;
+using LostAndFound.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ClosedXML.Excel;
-using System.IO;
+using System.Globalization;
 
 namespace LostAndFound.Controllers
 {
@@ -104,13 +104,13 @@ namespace LostAndFound.Controllers
                     worksheet.Cell(currentRow, 2).Value = item.Title;
 
                     worksheet.Cell(currentRow, 3).Value = item.Status == Enums.ItemType.Lost ? "مفقود" : "موجود";
-                    worksheet.Cell(currentRow, 4).Value = item.City.ToString();
+                    worksheet.Cell(currentRow, 4).Value = item.City.GetDisplayName();
 
                     string statusAr = item.ReportStatus == Enums.ReportStatus.Approved ? "مقبول" :
                                       item.ReportStatus == Enums.ReportStatus.Rejected ? "مرفوض" : "قيد المراجعة";
                     worksheet.Cell(currentRow, 5).Value = statusAr;
 
-                    worksheet.Cell(currentRow, 6).Value = item.CreatedAt.ToString("yyyy-MM-dd");
+                    worksheet.Cell(currentRow, 6).Value = item.CreatedAt.ToString("dd MMMM yyyy", new CultureInfo("ar-EG"));
                 }
 
                 worksheet.Columns().AdjustToContents();
